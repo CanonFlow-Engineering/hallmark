@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Wire.fs" />
+    <Compile Include="Storage.fs" />
+    <Compile Include="Bundles.fs" />
+    <Compile Include="Processes.fs" />
+    <Compile Include="Runner.fs" />
+    <ProjectReference Include="../src/Hallmark.fsproj" />
+  </ItemGroup>
+</Project>

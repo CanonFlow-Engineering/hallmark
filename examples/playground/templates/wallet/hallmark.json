@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "name": "playground-wallet",
+  "context": "@PROJECT@",
+  "inputs": [
+    "build.py",
+    "probe.py",
+    "compose.json",
+    "source/global.json",
+    "source/Directory.Build.props",
+    "compose-db.json",
+    "migrations",
+    "source/samples/40-wallet",
+    "verify.py"
+  ],
+  "allowedExecutables": [
+    "docker",
+    "python3"
+  ],
+  "steps": [
+    {
+      "id": "build",
+      "kind": "Build",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "build.py",
+          "wallet",
+          "--cache",
+          "@NUGET_CACHE@"
+        ],
+        "environment": {}
+      },
+      "retrySafety": "manual",
+      "outputs": [
+        "application.tar.gz"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "id": "artifact",
+      "kind": "Build",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "build"
+      ],
+      "operation": {
+        "type": "capture",
+        "path": "application.tar.gz"
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "database",
+      "kind": "Install",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "artifact"
+      ],
+      "operation": {
+        "type": "compose-up",
+        "file": "compose-db.json",
+        "project": "@PROJECT@",
+        "environment": {
+          "CF_DB_PASSWORD": {
+            "secret": "database"
+          },
+          "CF_FIXTURE_TOKEN": {
+            "secret": "token"
+          }
+        }
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "migrate",
+      "kind": "Migrate",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "database"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "docker",
+        "arguments": [
+          "run",
+          "--rm",
+          "--network",
+          "@PROJECT@_default",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "-v",
+          "@WORKSPACE@/migrations:/flyway/sql:ro",
+          "-e",
+          "FLYWAY_PASSWORD",
+          "-e",
+          "FLYWAY_URL=jdbc:postgresql://db:5432/fsplayground_hallmark",
+          "-e",
+          "FLYWAY_USER=fixture",
+          "flyway/flyway:13.12.1@sha256:3b4fae57858ee25735230e42f426fd200144fedbe692ea7789aa3e50a7c11657",
+          "migrate",
+          "-outputType=json"
+        ],
+        "environment": {
+          "FLYWAY_PASSWORD": {
+            "secret": "database"
+          }
+        }
+      },
+      "retrySafety": "external-ledger",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "configure",
+      "kind": "Configure",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "migrate"
+      ],
+      "operation": {
+        "type": "write-file",
+        "path": "delivery.json",
+        "content": "{\"application\":\"wallet\",\"artifact\":\"{{artifact.digest}}\"}"
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "install",
+      "kind": "Install",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "configure"
+      ],
+      "operation": {
+        "type": "compose-up",
+        "file": "compose.json",
+        "project": "@PROJECT@",
+        "environment": {
+          "CF_DB_PASSWORD": {
+            "secret": "database"
+          },
+          "CF_FIXTURE_TOKEN": {
+            "secret": "token"
+          }
+        }
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "exercise",
+      "kind": "Install",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "install"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "probe.py",
+          "wallet",
+          "@PROJECT@-app",
+          "--port",
+          "5088",
+          "--out",
+          "behavior.json",
+          "--probe-image",
+          "mcr.microsoft.com/dotnet/sdk:10.0.301@sha256:ea8bde36c11b6e7eec2656d0e59101d4462f6bd630730f2c8201ed0572b295d5"
+        ],
+        "environment": {
+          "CF_FIXTURE_TOKEN": {
+            "secret": "token"
+          }
+        }
+      },
+      "retrySafety": "manual",
+      "outputs": [
+        "behavior.json"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "verify",
+      "kind": "Verify",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "exercise"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "verify.py",
+          "wallet",
+          "@PROJECT@-app",
+          "--port",
+          "5088",
+          "--report",
+          "behavior.json",
+          "--probe-image",
+          "mcr.microsoft.com/dotnet/sdk:10.0.301@sha256:ea8bde36c11b6e7eec2656d0e59101d4462f6bd630730f2c8201ed0572b295d5"
+        ]
+      },
+      "retrySafety": "reconcile",
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "release",
+      "kind": "Release",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "verify"
+      ],
+      "operation": {
+        "type": "release",
+        "version": "1.4.0"
+      },
+      "retrySafety": "manual",
+      "outputs": [],
+      "timeoutSeconds": 120
+    }
+  ]
+}

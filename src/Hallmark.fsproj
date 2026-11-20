@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Planning.fs" />
+    <Compile Include="Operations.fs" />
+    <Compile Include="Serialization.fs" />
+    <Compile Include="Example.fs" />
+  </ItemGroup>
+</Project>

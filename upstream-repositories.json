@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-16",
+  "scope": "Repository metadata; SPDX values are metadata rather than a complete dependency license review. No upstream code copied.",
+  "repositories": [
+    {
+      "defaultBranch": "master",
+      "licenseName": "GNU Lesser General Public License v2.1",
+      "licenseSpdx": "LGPL-2.1",
+      "pushedAt": "2026-11-16T11:35:25Z",
+      "repository": "NixOS/nix",
+      "url": "https://github.com/NixOS/nix"
+    },
+    {
+      "defaultBranch": "devel",
+      "licenseName": "GNU General Public License v3.0",
+      "licenseSpdx": "GPL-3.0",
+      "pushedAt": "2026-11-11T01:21:09Z",
+      "repository": "ansible/ansible",
+      "url": "https://github.com/ansible/ansible"
+    },
+    {
+      "defaultBranch": "master",
+      "licenseName": "Apache License 2.0",
+      "licenseSpdx": "Apache-2.0",
+      "pushedAt": "2026-11-16T00:47:41Z",
+      "repository": "argoproj/argo-rollouts",
+      "url": "https://github.com/argoproj/argo-rollouts"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "Apache License 2.0",
+      "licenseSpdx": "Apache-2.0",
+      "pushedAt": "2026-11-16T12:17:11Z",
+      "repository": "dagger/dagger",
+      "url": "https://github.com/dagger/dagger"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "Apache License 2.0",
+      "licenseSpdx": "Apache-2.0",
+      "pushedAt": "2026-11-12T14:52:14Z",
+      "repository": "flyway/flyway",
+      "url": "https://github.com/flyway/flyway"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "Other",
+      "licenseSpdx": "NOASSERTION",
+      "pushedAt": "2026-11-16T12:05:33Z",
+      "repository": "liquibase/liquibase",
+      "url": "https://github.com/liquibase/liquibase"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "Mozilla Public License 2.0",
+      "licenseSpdx": "MPL-2.0",
+      "pushedAt": "2026-11-13T15:18:19Z",
+      "repository": "opentofu/opentofu",
+      "url": "https://github.com/opentofu/opentofu"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "Apache License 2.0",
+      "licenseSpdx": "Apache-2.0",
+      "pushedAt": "2026-11-12T19:00:30Z",
+      "repository": "sigstore/cosign",
+      "url": "https://github.com/sigstore/cosign"
+    },
+    {
+      "defaultBranch": "main",
+      "licenseName": "MIT License",
+      "licenseSpdx": "MIT",
+      "pushedAt": "2026-11-14T00:18:31Z",
+      "repository": "temporalio/sdk-dotnet",
+      "url": "https://github.com/temporalio/sdk-dotnet"
+    }
+  ]
+}

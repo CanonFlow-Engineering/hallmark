@@ -1,0 +1,35 @@
+{
+  "services": {
+    "app": {
+      "image": "mcr.microsoft.com/dotnet/aspnet:11.0.0-rc.3@sha256:e1ba5ef29b9c0f51b4236cbd25268b84a1e15f8fb1dca21f141bd0358903a1f2",
+      "container_name": "@PROJECT@-app",
+      "user": "1000:1000",
+      "read_only": true,
+      "init": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "pids_limit": 128,
+      "mem_limit": "512m",
+      "cpus": 1,
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        "@WORKSPACE@/payload:/app:ro"
+      ],
+      "working_dir": "/app",
+      "command": [
+        "dotnet",
+        "Shape.Api.dll"
+      ],
+      "environment": {
+        "DOTNET_CLI_HOME": "/tmp/dotnet-home",
+        "ASPNETCORE_URLS": "http://127.0.0.1:5089"
+      }
+    }
+  }
+}

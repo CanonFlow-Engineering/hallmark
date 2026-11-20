@@ -1,0 +1,19 @@
+{
+  "profile": "core",
+  "exclude": [
+    "**/obj/**",
+    "**/bin/**"
+  ],
+  "coreProjects": [
+    "src/Hallmark.fsproj"
+  ],
+  "shellProjects": [
+    "runtime/Hallmark.Runtime.fsproj",
+    "cli/Hallmark.Cli.fsproj",
+    "tests/Hallmark.Tests.fsproj",
+    "demo/Hallmark.Demo.fsproj"
+  ],
+  "shellNamespaces": [
+    "Hallmark.Lab.Serialization"
+  ]
+}

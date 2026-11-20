@@ -1,0 +1,67 @@
+{
+  "services": {
+    "db": {
+      "image": "postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc",
+      "environment": {
+        "POSTGRES_DB": "fsplayground_hallmark",
+        "POSTGRES_USER": "fixture",
+        "POSTGRES_PASSWORD": "${CF_DB_PASSWORD:-teardown-only}"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U fixture -d fsplayground_hallmark"
+        ],
+        "interval": "1s",
+        "timeout": "3s",
+        "retries": 40
+      },
+      "volumes": [
+        "database:/var/lib/postgresql"
+      ],
+      "mem_limit": "512m",
+      "cpus": 1
+    },
+    "app": {
+      "image": "mcr.microsoft.com/dotnet/aspnet:10.0.14@sha256:1a48394b6f29d3a32c79d9edecd4abda0ecbe8776d567dbfc4590ed6979c740c",
+      "container_name": "@PROJECT@-app",
+      "user": "1000:1000",
+      "read_only": true,
+      "init": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "pids_limit": 128,
+      "mem_limit": "512m",
+      "cpus": 1,
+      "tmpfs": [
+        "/tmp"
+      ],
+      "volumes": [
+        "@WORKSPACE@/payload:/app:ro"
+      ],
+      "working_dir": "/app",
+      "command": [
+        "dotnet",
+        "Wallet.Api.dll"
+      ],
+      "environment": {
+        "DOTNET_CLI_HOME": "/tmp/dotnet-home",
+        "ASPNETCORE_URLS": "http://127.0.0.1:5089",
+        "FSPLAYGROUND_POSTGRES": "Host=db;Database=fsplayground_hallmark;Username=fixture;Password=${CF_DB_PASSWORD:-teardown-only}",
+        "FSPLAYGROUND_TOKEN": "${CF_FIXTURE_TOKEN:-teardown-only}"
+      },
+      "depends_on": {
+        "db": {
+          "condition": "service_healthy"
+        }
+      }
+    }
+  },
+  "volumes": {
+    "database": {}
+  }
+}

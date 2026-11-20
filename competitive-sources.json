@@ -1,0 +1,1252 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-20",
+  "scope": "Representative counterparts across the complete lifecycle; not an exhaustive market census. Documentation/source review does not establish runtime parity. No new runtime dependency selected.",
+  "sources": [
+    {
+      "id": "SRC-DHALL",
+      "name": "Dhall",
+      "kind": "open language specification",
+      "url": "https://github.com/dhall-lang/dhall-lang/blob/master/standard/README.md",
+      "idea": "Typed composition, type-checking, import resolution and normalization",
+      "selection": "Integrate a pinned evaluator and feed the shared F# model",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-072"
+      ]
+    },
+    {
+      "id": "SRC-MCP",
+      "name": "Model Context Protocol",
+      "kind": "open protocol specification",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "idea": "Tool discovery, structured schemas and local and remote transports",
+      "selection": "Integrate local stdio first and qualify authenticated remote access separately",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-070",
+        "CF-071"
+      ]
+    },
+    {
+      "id": "SRC-DAGGER",
+      "name": "Dagger",
+      "kind": "open-source engine / commercial cloud",
+      "url": "https://docs.dagger.io/reference/glossary/",
+      "idea": "Typed artifacts, dependency execution and input-aware caching",
+      "selection": "Integrate a pinned builder; do not cache effects",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-030",
+        "CF-048",
+        "CF-050"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.dagger.io/reference/glossary/",
+        "sha256": "4bc30f50614189c0485816133a09cc4e1a2b9d56ea09bc3ce1938ca835e6e17a",
+        "bytes": 54174,
+        "retrievedUtc": "2026-11-20T13:29:39.844995+00:00"
+      }
+    },
+    {
+      "id": "SRC-NIX",
+      "name": "Nix",
+      "kind": "open-source project",
+      "url": "https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-flake.html",
+      "idea": "Locked source/input closure and archive/check operations",
+      "selection": "Adopt closure identity; optional provider; flakes remain experimental",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-005",
+        "CF-048"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-flake.html",
+        "sha256": "a2c517c4d43c4b2cef28991ee4ba8292cf09dc380980c4e9b3bb44ff8f783bf5",
+        "bytes": 51161,
+        "retrievedUtc": "2026-11-20T13:29:39.845661+00:00"
+      }
+    },
+    {
+      "id": "SRC-BAZEL",
+      "name": "Bazel",
+      "kind": "open-source project",
+      "url": "https://bazel.build/remote/caching",
+      "idea": "Action cache separated from output CAS",
+      "selection": "Adopt cache correctness contract; optional builder",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-033",
+        "CF-043",
+        "CF-048"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://bazel.build/remote/caching",
+        "sha256": "19a366b6bc3efd452f272eab79db4b2add0377396678111b698a84d8747d4e00",
+        "bytes": 240748,
+        "retrievedUtc": "2026-11-20T13:29:39.846146+00:00"
+      }
+    },
+    {
+      "id": "SRC-NX",
+      "name": "Nx",
+      "kind": "open-source core / commercial cloud",
+      "url": "https://nx.dev/docs/features/ci-features/affected",
+      "idea": "Affected tasks follow declared inputs and consumed outputs",
+      "selection": "Adopt impact explanations; do not force Nx",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-027",
+        "CF-041",
+        "CF-043"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://nx.dev/docs/features/ci-features/affected",
+        "sha256": "d22b7f38128da85acedae47454ff6deb7f45e5aa3fa703d1f166d1fbde4a2832",
+        "bytes": 336625,
+        "retrievedUtc": "2026-11-20T13:29:39.846482+00:00"
+      }
+    },
+    {
+      "id": "SRC-OPENTOFU",
+      "name": "OpenTofu",
+      "kind": "open-source project",
+      "url": "https://opentofu.org/docs/language/state/locking/",
+      "idea": "Backend locking, import and saved-plan/state boundaries",
+      "selection": "Integrate IaC ownership; locking is backend-dependent",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-038",
+        "CF-039",
+        "CF-066"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://opentofu.org/docs/language/state/locking/",
+        "sha256": "0edf5841cf676ff7056504a3c096cc0d8fd5b4ccd0c0c8cbfdd81a877bc9892b",
+        "bytes": 58386,
+        "retrievedUtc": "2026-11-20T13:29:39.846872+00:00"
+      }
+    },
+    {
+      "id": "SRC-PULUMI",
+      "name": "Pulumi",
+      "kind": "open-source IaC core / commercial services",
+      "url": "https://www.pulumi.com/docs/iac/concepts/automation-api/",
+      "idea": "Programmatic preview/apply/import with provider identity",
+      "selection": "Integrate optionally; preserve engine-owned state",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-002",
+        "CF-012",
+        "CF-018",
+        "CF-020",
+        "CF-049",
+        "CF-067",
+        "CF-068",
+        "CF-073"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://www.pulumi.com/docs/iac/concepts/automation-api/",
+        "sha256": "8d3ff3cf12a9751ef1fb22f6e8411e9a0dfdb28e16bc9bead9641f6d5f37e863",
+        "bytes": 488437,
+        "retrievedUtc": "2026-11-20T13:29:39.847256+00:00"
+      }
+    },
+    {
+      "id": "SRC-ANSIBLE",
+      "name": "Ansible",
+      "kind": "open-source core / commercial platform",
+      "url": "https://docs.ansible.com/projects/ansible/latest/playbooks_checkmode.html",
+      "idea": "Resource modules, check/diff and explicit preview limits",
+      "selection": "Integrate configuration adapters; show unsupported previews",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-018",
+        "CF-022",
+        "CF-061"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.ansible.com/projects/ansible/latest/playbooks_checkmode.html",
+        "sha256": "7e8f31133339de0645ed5a688ed35d6e9302abe86a6104e0675908413892babe",
+        "bytes": 722,
+        "retrievedUtc": "2026-11-20T13:29:39.847594+00:00"
+      }
+    },
+    {
+      "id": "SRC-CROSSPLANE",
+      "name": "Crossplane",
+      "kind": "open-source project",
+      "url": "https://docs.crossplane.io/latest/composition/compositions/",
+      "idea": "Reusable composite resource contracts",
+      "selection": "Adopt composition pattern; integrate its controller optionally",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-024",
+        "CF-026"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.crossplane.io/latest/composition/compositions/",
+        "sha256": "663d43cd6b92b3cd14924990b979603a9c4ef2f76544d20a76ffcb8ff2a5762a",
+        "bytes": 176154,
+        "retrievedUtc": "2026-11-20T13:29:39.847884+00:00"
+      }
+    },
+    {
+      "id": "SRC-PACKER",
+      "name": "Packer",
+      "kind": "commercial ecosystem / runtime license unselected",
+      "url": "https://developer.hashicorp.com/packer/docs/intro",
+      "idea": "Build identified machine images from one configuration",
+      "selection": "Defer image builder until VM-image consumer; review exact release license",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-033"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://developer.hashicorp.com/packer/docs/intro",
+        "sha256": "9e192f590efe42e909584eb4efda7509f44cffc9ff92750933ac7169c3c955b1",
+        "bytes": 146040,
+        "retrievedUtc": "2026-11-20T13:29:40.182201+00:00"
+      }
+    },
+    {
+      "id": "SRC-FLYWAY",
+      "name": "Flyway",
+      "kind": "community and commercial editions",
+      "url": "https://documentation.red-gate.com/flyway/reference/commands/validate",
+      "idea": "Applied migration checksum/history validation",
+      "selection": "Extend the existing recipe with explicit validation and recovery",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-046"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://documentation.red-gate.com/flyway/reference/commands/validate",
+        "sha256": "6598ea771d43a274ea5af93f1d591a76e34e69dfa569ff740a2a55bc39affeee",
+        "bytes": 28752,
+        "retrievedUtc": "2026-11-20T13:29:40.439311+00:00"
+      }
+    },
+    {
+      "id": "SRC-LIQUIBASE",
+      "name": "Liquibase",
+      "kind": "source-available FSL / commercial editions",
+      "url": "https://docs.liquibase.com/secure/user-guide-5-1/what-are-preconditions",
+      "idea": "State preconditions and distinct failure/error handling",
+      "selection": "Adopt the pattern; defer runtime selection pending exact license review",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-008"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.liquibase.com/secure/user-guide-5-1/what-are-preconditions",
+        "sha256": "a8116108c0a1e13171c0906bd45e2c4e874da686815a7743b120b7b0616a3296",
+        "bytes": 1812588,
+        "retrievedUtc": "2026-11-20T13:29:40.478791+00:00"
+      }
+    },
+    {
+      "id": "SRC-ATLAS",
+      "name": "Atlas",
+      "kind": "open-source core / commercial features",
+      "url": "https://atlasgo.io/versioned/lint",
+      "idea": "Migration risk analysis and disposable-database checks",
+      "selection": "Adopt risk evidence; current migrate lint is Pro since v0.38",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-004",
+        "CF-006",
+        "CF-046",
+        "CF-065"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://atlasgo.io/versioned/lint",
+        "sha256": "23eb2226f24f30d2ac38ea8bac8792057d936918c712693a61a9e58e5fc9a4b7",
+        "bytes": 161026,
+        "retrievedUtc": "2026-11-20T13:29:40.642082+00:00"
+      }
+    },
+    {
+      "id": "SRC-PGROLL",
+      "name": "pgroll",
+      "kind": "open-source project",
+      "url": "https://github.com/xataio/pgroll/blob/448b29ba2215da4619d2eb8ee543957c6acfa95a/README.md",
+      "idea": "Coexisting schema versions, backfill and explicit completion",
+      "selection": "Adopt phase gates; optional provider after PostgreSQL qualification",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "pinned-public-source-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-003",
+        "CF-007",
+        "CF-008",
+        "CF-009",
+        "CF-010"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://github.com/xataio/pgroll/blob/448b29ba2215da4619d2eb8ee543957c6acfa95a/README.md",
+        "sha256": "2f8486db04f8013e81bd88edb6af9e4c0834c2ec4826309944c7a4b266721baa",
+        "bytes": 287163,
+        "retrievedUtc": "2026-11-20T13:29:40.848612+00:00"
+      }
+    },
+    {
+      "id": "SRC-SQITCH",
+      "name": "Sqitch",
+      "kind": "open-source project",
+      "url": "https://sqitch.org/docs/manual/sqitch/",
+      "idea": "Named dependencies and separate deploy/revert/verify scripts",
+      "selection": "Adopt dependency/verification separation; optional adapter",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-011",
+        "CF-013",
+        "CF-022",
+        "CF-046"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://sqitch.org/docs/manual/sqitch/",
+        "sha256": "97aae38f42f8becb264d20fdae49fd380bcff8afd053ec68e0af54cf3c0ad82c",
+        "bytes": 23338,
+        "retrievedUtc": "2026-11-20T13:29:40.938065+00:00"
+      }
+    },
+    {
+      "id": "SRC-BYTEBASE",
+      "name": "Bytebase",
+      "kind": "public source / commercial editions; license unselected",
+      "url": "https://docs.bytebase.com/sql-review/review-rules",
+      "idea": "Engine-scoped SQL risk and governance checks",
+      "selection": "Adopt risk classification; select licensed adapter separately",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-047"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.bytebase.com/sql-review/review-rules",
+        "sha256": "f7f682efc8fb0a71019b386e866e5ff4f28f31c92d0952164318d9f7f3d3dbc9",
+        "bytes": 714933,
+        "retrievedUtc": "2026-11-20T13:29:40.951187+00:00"
+      }
+    },
+    {
+      "id": "SRC-ARGOCD",
+      "name": "Argo CD",
+      "kind": "open-source project",
+      "url": "https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/",
+      "idea": "Ordered sync phases, hooks and health-dependent waves",
+      "selection": "Integrate; keep external migration verification beyond exit status",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-025"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/",
+        "sha256": "4ca3e8b9b836a3533c3f27d3bcba0ea38829a0bd9e2018dd3c06bf109a73b14f",
+        "bytes": 101072,
+        "retrievedUtc": "2026-11-20T13:29:41.109279+00:00"
+      }
+    },
+    {
+      "id": "SRC-ROLLOUTS",
+      "name": "Argo Rollouts",
+      "kind": "open-source project",
+      "url": "https://argoproj.github.io/argo-rollouts/features/analysis/",
+      "idea": "Measured rollout analysis with successful/failed/inconclusive outcomes",
+      "selection": "Integrate progressive delivery; keep an inconclusive outcome unresolved",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-009",
+        "CF-037",
+        "CF-055",
+        "CF-065"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://argoproj.github.io/argo-rollouts/features/analysis/",
+        "sha256": "f12653918289f22255b881b6c1542fb2d63c51f7e3487d799baf8a1b84bf469d",
+        "bytes": 234051,
+        "retrievedUtc": "2026-11-20T13:29:41.187466+00:00"
+      }
+    },
+    {
+      "id": "SRC-FLUX",
+      "name": "Flux",
+      "kind": "open-source project",
+      "url": "https://fluxcd.io/flux/installation/configuration/multitenancy/",
+      "idea": "Tenant-scoped reconciliation identities and references",
+      "selection": "Integrate one selected GitOps controller; no competing ownership",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-029",
+        "CF-039",
+        "CF-054"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://fluxcd.io/flux/installation/configuration/multitenancy/",
+        "sha256": "9e7169581225187addf27776ef1e7f9d73caaf85e949f059abd3d96ec09d073f",
+        "bytes": 180940,
+        "retrievedUtc": "2026-11-20T13:29:41.228400+00:00"
+      }
+    },
+    {
+      "id": "SRC-SPINNAKER",
+      "name": "Spinnaker",
+      "kind": "open-source project",
+      "url": "https://spinnaker.io/docs/concepts/",
+      "idea": "Deployment stages, provider boundaries and environment visibility",
+      "selection": "Adopt patterns; defer another orchestration runtime",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-037",
+        "CF-040"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://spinnaker.io/docs/concepts/",
+        "sha256": "6db1d483a7bb0ee67119ed29262681daa2d21be061bc5b7bc9c1652217b477b1",
+        "bytes": 145687,
+        "retrievedUtc": "2026-11-20T13:29:41.281774+00:00"
+      }
+    },
+    {
+      "id": "SRC-TEMPORAL",
+      "name": "Temporal",
+      "kind": "open-source runtime / commercial cloud",
+      "url": "https://docs.temporal.io/activity-definition",
+      "idea": "Idempotent activity boundaries and replay/version constraints",
+      "selection": "Adopt effect rules; defer durable engine until distributed workload",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-010",
+        "CF-038",
+        "CF-062"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.temporal.io/activity-definition",
+        "sha256": "f5e31979a8c48d526b7de8416a4d3469f94f5d391062447c2412058d7484ae76",
+        "bytes": 130334,
+        "retrievedUtc": "2026-11-20T13:29:41.529955+00:00"
+      }
+    },
+    {
+      "id": "SRC-TILT",
+      "name": "Tilt",
+      "kind": "open-source project",
+      "url": "https://docs.tilt.dev/live_update_reference.html",
+      "idea": "Selective live sync with full-rebuild fallback",
+      "selection": "Adopt explicit dev override/fallback; optional integration",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-042"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.tilt.dev/live_update_reference.html",
+        "sha256": "1e828ff56262629a49e3595bd531fdc97e216a3081eb355d488f02be7319cf9b",
+        "bytes": 65077,
+        "retrievedUtc": "2026-11-20T13:29:41.735557+00:00"
+      }
+    },
+    {
+      "id": "SRC-DEVSPACE",
+      "name": "DevSpace",
+      "kind": "open-source project",
+      "url": "https://www.devspace.sh/docs/configuration/dev/",
+      "idea": "Dev containers, file sync and connection to existing deployments",
+      "selection": "Integrate optional inner-loop provider",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-023",
+        "CF-042"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://www.devspace.sh/docs/configuration/dev/",
+        "sha256": "cf420197c3271546b9a8c1751964a03f3b64c0916d7ea8d861ac535da055d167",
+        "bytes": 290796,
+        "retrievedUtc": "2026-11-20T13:29:41.751032+00:00"
+      }
+    },
+    {
+      "id": "SRC-TELEPRESENCE",
+      "name": "Telepresence",
+      "kind": "open-source project / commercial ecosystem",
+      "url": "https://telepresence.io/",
+      "idea": "Local-to-cluster traffic interception",
+      "selection": "Defer opt-in traffic debugging; not an environment snapshot",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-064"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://telepresence.io/",
+        "sha256": "406fab47375c04478772af87a5e8f0b1a8e0a3cd6cf148aa943d7064bdf780d4",
+        "bytes": 348155,
+        "retrievedUtc": "2026-11-20T13:29:41.786304+00:00"
+      }
+    },
+    {
+      "id": "SRC-MIRRORD",
+      "name": "mirrord",
+      "kind": "MIT core / commercial capabilities",
+      "url": "https://github.com/metalbear-co/mirrord/blob/c8ded0d15e27ac33c47838f7ff9d5b234e749bbe/README.md",
+      "idea": "Local process using remote traffic/files/environment",
+      "selection": "Defer isolated opt-in debugging; not database capture",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "pinned-public-source-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-064"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://github.com/metalbear-co/mirrord/blob/c8ded0d15e27ac33c47838f7ff9d5b234e749bbe/README.md",
+        "sha256": "1ee6ef6291007e09c86b9fadffa04e0185d9d95984ddef2f40fbeab1708b9ea9",
+        "bytes": 272706,
+        "retrievedUtc": "2026-11-20T13:29:41.795687+00:00"
+      }
+    },
+    {
+      "id": "SRC-OCTOPUS",
+      "name": "Octopus Deploy",
+      "kind": "commercial platform",
+      "url": "https://octopus.com/docs/releases",
+      "idea": "Release process snapshots and separately mutable tenant inputs",
+      "selection": "Adopt immutable composition; explicitly bind tenant/config identities",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-011",
+        "CF-032",
+        "CF-035",
+        "CF-055",
+        "CF-061"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://octopus.com/docs/releases",
+        "sha256": "c0cb26ebb22219a030ec6e780100d5c85e2004c14294e7c69cab9fc938a934fc",
+        "bytes": 74348,
+        "retrievedUtc": "2026-11-20T13:29:41.988927+00:00"
+      }
+    },
+    {
+      "id": "SRC-HARNESS",
+      "name": "Harness",
+      "kind": "commercial platform / separately licensed components",
+      "url": "https://developer.harness.io/continuous-delivery/use-continuous-delivery/verify-deployments/verify-deployments-with-the-verify-step.md",
+      "idea": "Deployment verification from metrics and logs",
+      "selection": "Adopt measured post-deployment gates; do not require AI anomaly agents",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-037",
+        "CF-058"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://developer.harness.io/continuous-delivery/use-continuous-delivery/verify-deployments/verify-deployments-with-the-verify-step.md",
+        "sha256": "453431e1b52cb1c86e368f84771eb3a4b363a05f57a2e9ec6feecd1c58f90590",
+        "bytes": 7810,
+        "retrievedUtc": "2026-11-20T13:29:42.174798+00:00"
+      }
+    },
+    {
+      "id": "SRC-GITLAB",
+      "name": "GitLab",
+      "kind": "open-core platform with tiered features",
+      "url": "https://docs.gitlab.com/ci/review_apps/",
+      "idea": "Temporary review environments and version-linked stakeholder previews",
+      "selection": "Adopt expiring previews; integrate existing CI",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-027",
+        "CF-031",
+        "CF-032",
+        "CF-040",
+        "CF-045",
+        "CF-054",
+        "CF-056"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.gitlab.com/ci/review_apps/",
+        "sha256": "2b0a18c698e423f69222a88e7663cd52b40000f902ea36ce4cc4991c08c284fe",
+        "bytes": 65507,
+        "retrievedUtc": "2026-11-20T13:29:42.225864+00:00"
+      }
+    },
+    {
+      "id": "SRC-BACKSTAGE",
+      "name": "Backstage",
+      "kind": "open-source project",
+      "url": "https://backstage.io/docs/features/software-templates/",
+      "idea": "Parameterized templates and task/report links",
+      "selection": "Adopt reusable templates; optional portal integration",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-020",
+        "CF-045",
+        "CF-060"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://backstage.io/docs/features/software-templates/",
+        "sha256": "b44e288e6c5804cfd1c005fdc5b23e639f76ed1472e23e010959ac848270e032",
+        "bytes": 45038,
+        "retrievedUtc": "2026-11-20T13:29:42.327249+00:00"
+      }
+    },
+    {
+      "id": "SRC-SCORE",
+      "name": "Score",
+      "kind": "open specification / open-source implementations",
+      "url": "https://docs.score.dev/docs/score-specification/score-spec-reference/",
+      "idea": "Portable workload intent and declared resource outputs",
+      "selection": "Adopt target-independent intent; optional importer",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-001",
+        "CF-021",
+        "CF-023",
+        "CF-036",
+        "CF-049",
+        "CF-060",
+        "CF-067",
+        "CF-073"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.score.dev/docs/score-specification/score-spec-reference/",
+        "sha256": "af2c1a27e8df41dc43b96b387d158380f374a9225684ca6b60cba5e95594272b",
+        "bytes": 121953,
+        "retrievedUtc": "2026-11-20T13:29:42.375941+00:00"
+      }
+    },
+    {
+      "id": "SRC-CUE",
+      "name": "CUE",
+      "kind": "open-source project",
+      "url": "https://cuelang.org/docs/introduction/",
+      "idea": "Validation and composable configuration constraints",
+      "selection": "Adopt validation/overlay rules; preserve F# and existing wire format",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-014",
+        "CF-021",
+        "CF-049"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://cuelang.org/docs/introduction/",
+        "sha256": "4ec9c6c596001797912c0fff4ae9743b4d7d4fa05c0dd47c8ecad79118421183",
+        "bytes": 43945,
+        "retrievedUtc": "2026-11-20T13:29:42.470169+00:00"
+      }
+    },
+    {
+      "id": "SRC-HELM",
+      "name": "Helm",
+      "kind": "open-source project",
+      "url": "https://helm.sh/docs/topics/charts/",
+      "idea": "Versioned chart dependencies and values",
+      "selection": "Integrate package adapter; rendering alone is not runtime verification",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-005",
+        "CF-019",
+        "CF-026",
+        "CF-041"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://helm.sh/docs/topics/charts/",
+        "sha256": "e7c7d652d68382cceee30044e741483ef1bca387518edbc27ee1a6ace4c8f1af",
+        "bytes": 183092,
+        "retrievedUtc": "2026-11-20T13:29:42.617688+00:00"
+      }
+    },
+    {
+      "id": "SRC-KUSTOMIZE",
+      "name": "Kustomize",
+      "kind": "open-source project",
+      "url": "https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/",
+      "idea": "Reusable bases and environment overlays",
+      "selection": "Integrate rendering; retain final resolved configuration identity",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-035"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/",
+        "sha256": "ad216494ed6fca54bc82c26c7c7fde6d7db6f0349209198f08663aa15a15eafa",
+        "bytes": 600500,
+        "retrievedUtc": "2026-11-20T13:29:42.658198+00:00"
+      }
+    },
+    {
+      "id": "SRC-TEKTON",
+      "name": "Tekton Chains",
+      "kind": "open-source project",
+      "url": "https://tekton.dev/docs/chains/",
+      "idea": "Signed run/artifact attestations using standard payloads",
+      "selection": "Integrate external CI receipts; preserve producer identity",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-028",
+        "CF-030",
+        "CF-052",
+        "CF-053",
+        "CF-068",
+        "CF-074"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://tekton.dev/docs/chains/",
+        "sha256": "69046fa4336c15b683d0b82a48187d7569dd57a26ce4f2a3889e4848f3cfc3a9",
+        "bytes": 92818,
+        "retrievedUtc": "2026-11-20T13:29:42.799284+00:00"
+      }
+    },
+    {
+      "id": "SRC-OPENBAO",
+      "name": "OpenBao",
+      "kind": "open-source project",
+      "url": "https://openbao.org/docs/secrets/databases/",
+      "idea": "Leased dynamic credentials and rotation",
+      "selection": "Integrate external secret references and renewal/revocation",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-017",
+        "CF-050"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://openbao.org/docs/secrets/databases/",
+        "sha256": "5c4cef3e9a451b456fc6cf8fd272064a5202fa956c0616eadf105f0c8e8bac5a",
+        "bytes": 48230,
+        "retrievedUtc": "2026-11-20T13:29:42.962552+00:00"
+      }
+    },
+    {
+      "id": "SRC-COSIGN",
+      "name": "Sigstore Cosign",
+      "kind": "open-source project",
+      "url": "https://docs.sigstore.dev/cosign/verifying/verify/",
+      "idea": "Identity/issuer-bound verification and local verification bundles",
+      "selection": "Integrate explicit trust profiles; keep offline verification",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-028",
+        "CF-051"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.sigstore.dev/cosign/verifying/verify/",
+        "sha256": "8c35e483a9890ef4e39713b3eac990d59f56d310b5545bc3224c0343bdb53c8a",
+        "bytes": 74289,
+        "retrievedUtc": "2026-11-20T13:29:43.082895+00:00"
+      }
+    },
+    {
+      "id": "SRC-SLSA",
+      "name": "SLSA",
+      "kind": "open standard",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "idea": "Artifact provenance bound to source, inputs and builder",
+      "selection": "Adopt exportable provenance; do not imply certification",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-052"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://slsa.dev/spec/v1.2/provenance",
+        "sha256": "bfc5dcdaedc5d02bd10bb5c57c54f38cf755b2e266a8603eb719ab04db510495",
+        "bytes": 17272,
+        "retrievedUtc": "2026-11-20T13:29:43.115611+00:00"
+      }
+    },
+    {
+      "id": "SRC-ORAS",
+      "name": "ORAS",
+      "kind": "open-source project",
+      "url": "https://oras.land/docs/",
+      "idea": "Generic artifact push/pull using OCI registries",
+      "selection": "Integrate artifact distribution; do not build a registry",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-019",
+        "CF-051"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://oras.land/docs/",
+        "sha256": "6a70b5de2a35703675f75d3bff1b65ea593ed5a6cdaf91bb81f1291e0de32c84",
+        "bytes": 23506,
+        "retrievedUtc": "2026-11-20T13:29:43.203096+00:00"
+      }
+    },
+    {
+      "id": "SRC-HARBOR",
+      "name": "Harbor",
+      "kind": "open-source project",
+      "url": "https://goharbor.io/docs/edge/working-with-projects/working-with-images/create-tag-retention-rules/",
+      "idea": "Retention policies and dry-run retention decisions",
+      "selection": "Adopt reachability/retention requirements; optional registry integration",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-057"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://goharbor.io/docs/edge/working-with-projects/working-with-images/create-tag-retention-rules/",
+        "sha256": "93effc7c3ba4d16c641708c7ff6078984460381c8152e8e0f2cf47d9e2d8a61b",
+        "bytes": 49545,
+        "retrievedUtc": "2026-11-20T13:29:43.379504+00:00"
+      }
+    },
+    {
+      "id": "SRC-SYFT",
+      "name": "Syft",
+      "kind": "open-source project",
+      "url": "https://github.com/anchore/syft",
+      "idea": "Generate SBOMs from filesystems and images",
+      "selection": "Integrate versioned artifact-bound inventory",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-052"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://github.com/anchore/syft",
+        "sha256": "bd5a68c3296bcc3e3496b1d06e59326558f5a10b71fc922d061a0c7fb434a2bb",
+        "bytes": 326735,
+        "retrievedUtc": "2026-11-20T13:29:43.420538+00:00"
+      }
+    },
+    {
+      "id": "SRC-TRIVY",
+      "name": "Trivy",
+      "kind": "open-source project / commercial ecosystem",
+      "url": "https://trivy.dev/docs/latest/scanner/vulnerability/",
+      "idea": "Vulnerability results with advisory-source and detection limits",
+      "selection": "Integrate bounded scans; preserve coverage and database freshness",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-052"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://trivy.dev/docs/latest/scanner/vulnerability/",
+        "sha256": "14451d7ce4b44b96a5b86b00ddad46e534ce81dedc6181b0f61ea74cd9c81f31",
+        "bytes": 170926,
+        "retrievedUtc": "2026-11-20T13:29:43.588113+00:00"
+      }
+    },
+    {
+      "id": "SRC-OPA",
+      "name": "Open Policy Agent",
+      "kind": "open-source project",
+      "url": "https://www.openpolicyagent.org/docs",
+      "idea": "Policy decisions separated from enforcement",
+      "selection": "Integrate optional evaluator; Hallmark retains enforcement",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-029",
+        "CF-053",
+        "CF-074"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://www.openpolicyagent.org/docs",
+        "sha256": "8230cbbc1b2bb0bc875bf6b4e0f3dc91b0b0d6659efc923a9985e016f1359cb0",
+        "bytes": 280854,
+        "retrievedUtc": "2026-11-20T13:29:43.590171+00:00"
+      }
+    },
+    {
+      "id": "SRC-VELERO",
+      "name": "Velero",
+      "kind": "open-source project",
+      "url": "https://velero.io/docs/v1.19/restore-reference/",
+      "idea": "Filtered/remapped restore, partial outcomes and provider-specific volumes",
+      "selection": "Integrate Kubernetes recovery after actual restore drills",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-015",
+        "CF-016",
+        "CF-017",
+        "CF-047"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://velero.io/docs/v1.19/restore-reference/",
+        "sha256": "641fc2a53e549d691af40aac5c5e8d3b45fb29004806a53344eae58712684ef5",
+        "bytes": 65487,
+        "retrievedUtc": "2026-11-20T13:29:43.684479+00:00"
+      }
+    },
+    {
+      "id": "SRC-OTEL",
+      "name": "OpenTelemetry",
+      "kind": "open specification / open-source toolkit",
+      "url": "https://opentelemetry.io/docs/concepts/signals/",
+      "idea": "Correlated traces, metrics and logs",
+      "selection": "Integrate export; do not replace immutable execution receipts",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-058"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://opentelemetry.io/docs/concepts/signals/",
+        "sha256": "c64115a9887bb5ed0b07790494586aff9d73f0cda4673b57c0193862890f7dc1",
+        "bytes": 405702,
+        "retrievedUtc": "2026-11-20T13:29:43.836032+00:00"
+      }
+    },
+    {
+      "id": "SRC-UNLEASH",
+      "name": "Unleash",
+      "kind": "open-source core / commercial features",
+      "url": "https://docs.getunleash.io/concepts/environments",
+      "idea": "Environment-scoped feature activation and variants",
+      "selection": "Integrate flag provider; environment cloning is marked Enterprise",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-034"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.getunleash.io/concepts/environments",
+        "sha256": "f7fe818991b2bd200b3ce80a4cfac6a290061e28e5c241f764ebd394ad80cfdc",
+        "bytes": 163748,
+        "retrievedUtc": "2026-11-20T13:29:43.922816+00:00"
+      }
+    },
+    {
+      "id": "SRC-OPENFEATURE",
+      "name": "OpenFeature",
+      "kind": "open specification / open-source SDKs",
+      "url": "https://openfeature.dev/docs/reference/concepts/provider/",
+      "idea": "Provider-neutral feature evaluation",
+      "selection": "Integrate optionally; separate missing provider from release success",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-034"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://openfeature.dev/docs/reference/concepts/provider/",
+        "sha256": "5ce390473db95053170e8611c157ecb1661bddd15f486d44911992447d3b7852",
+        "bytes": 145443,
+        "retrievedUtc": "2026-11-20T13:29:44.078176+00:00"
+      }
+    },
+    {
+      "id": "SRC-CHANGESETS",
+      "name": "Changesets",
+      "kind": "open-source project",
+      "url": "https://github.com/changesets/changesets/blob/9a035ec36045aeb6141dd0bbac9ab9e3c69ac0bc/README.md",
+      "idea": "Contributor change sets, dependent versions and generated notes",
+      "selection": "Adopt language-neutral contract; inspected main is v3 development",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "pinned-public-source-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-006",
+        "CF-044"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://github.com/changesets/changesets/blob/9a035ec36045aeb6141dd0bbac9ab9e3c69ac0bc/README.md",
+        "sha256": "b71a103ca206fa662f4e5d531c0a22d43c8ebfa6c20e65fef8d0484136086ef6",
+        "bytes": 178900,
+        "retrievedUtc": "2026-11-20T13:29:44.154949+00:00"
+      }
+    },
+    {
+      "id": "SRC-RENOVATE",
+      "name": "Renovate",
+      "kind": "open-source project / commercial services",
+      "url": "https://docs.renovatebot.com/key-concepts/automerge/",
+      "idea": "Dependency proposals conditioned on current required checks",
+      "selection": "Integrate proposals; no implicit merge or deployment",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-059"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://docs.renovatebot.com/key-concepts/automerge/",
+        "sha256": "92d44811ce9a6598c3814890a5c69fd398890542197eaac9b970c413cc772266",
+        "bytes": 66984,
+        "retrievedUtc": "2026-11-20T13:29:44.222073+00:00"
+      }
+    },
+    {
+      "id": "SRC-INFRACOST",
+      "name": "Infracost",
+      "kind": "public CLI / commercial services; exact license unselected",
+      "url": "https://www.infracost.io/docs/",
+      "idea": "Pre-deployment cost estimates and policy feedback",
+      "selection": "Defer optional estimates until cloud consumer; never label estimate actual billing",
+      "reviewedAt": "2026-11-20",
+      "evidenceKind": "primary-documentation-read",
+      "runtimeQualifiedByThisReview": false,
+      "requirementIds": [
+        "CF-063"
+      ],
+      "snapshot": {
+        "httpStatus": 200,
+        "finalUrl": "https://www.infracost.io/docs/",
+        "sha256": "e5d8ae30e5875d03882de19faffdf0b5de28c6308b488f278de15392dfd6e8f8",
+        "bytes": 79128,
+        "retrievedUtc": "2026-11-20T13:29:44.330375+00:00"
+      }
+    }
+  ],
+  "sourceInspections": [
+    {
+      "repo": "xataio/pgroll",
+      "path": "schema.json",
+      "commit": "448b29ba2215da4619d2eb8ee543957c6acfa95a",
+      "date": "2026-11-02T14:07:59Z",
+      "subject": "docs: match the cli reference for status, complete and rollback to their output (#1053)",
+      "gitBlob": "59edf1709ca684340e5908ce4ec3839b11cbd7d1",
+      "localPath": "public-source/xataio--pgroll/schema.json",
+      "url": "https://github.com/xataio/pgroll/blob/448b29ba2215da4619d2eb8ee543957c6acfa95a/schema.json",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "29e2be6a726459224d77aca0a293d371d34936130190726afc10cfc9dbe8a280"
+    },
+    {
+      "repo": "opentofu/opentofu",
+      "path": "internal/states/statemgr/locker.go",
+      "commit": "0183949c60df4ce6b6268e0b6e2a2acc40bf18a3",
+      "date": "2026-11-20T13:00:03Z",
+      "subject": "Add some notes about checks in the different runtimes",
+      "gitBlob": "a88273aa9df0b3fc10c99ddf8d12e84fc81eaa7c",
+      "localPath": "public-source/opentofu--opentofu/internal/states/statemgr/locker.go",
+      "url": "https://github.com/opentofu/opentofu/blob/0183949c60df4ce6b6268e0b6e2a2acc40bf18a3/internal/states/statemgr/locker.go",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "b6b0ae9af55c52b2fa240c117833fe44c0623011eecda900eec328f1547c7bc6"
+    },
+    {
+      "repo": "liquibase/liquibase",
+      "path": "LICENSE.txt",
+      "commit": "d0e1304f5f31be5df0bdd25f42cf195aad521fb1",
+      "date": "2026-11-17T17:47:56Z",
+      "subject": "Fix #8058: Preserve PostgreSQL catalog case in correctObjectName (#8070)",
+      "gitBlob": "e7bda0e792778f03bbf1e1335962d5dd328e0a96",
+      "localPath": "public-source/liquibase--liquibase/LICENSE.txt",
+      "url": "https://github.com/liquibase/liquibase/blob/d0e1304f5f31be5df0bdd25f42cf195aad521fb1/LICENSE.txt",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "4d4e733f899514710b8f1b82ff5a6b8ae7a1aede854afb02ef69ea5cf5a73130"
+    },
+    {
+      "repo": "changesets/changesets",
+      "path": "README.md",
+      "commit": "9a035ec36045aeb6141dd0bbac9ab9e3c69ac0bc",
+      "date": "2026-11-13T01:36:12Z",
+      "subject": "docs: note that changeset version keeps changesets of skipped packages (#2345)",
+      "gitBlob": "3340687d1fb52bb74b5061ad3bfe4df7689a4715",
+      "localPath": "public-source/changesets--changesets/README.md",
+      "url": "https://github.com/changesets/changesets/blob/9a035ec36045aeb6141dd0bbac9ab9e3c69ac0bc/README.md",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "7e3c3cb441a634dbb27a18dda94d4e49d93cb519ef5d194b4ae71bafa5209268"
+    },
+    {
+      "repo": "metalbear-co/mirrord",
+      "path": "README.md",
+      "commit": "c8ded0d15e27ac33c47838f7ff9d5b234e749bbe",
+      "date": "2026-11-20T10:30:03Z",
+      "subject": "Add ECS demo video to the Amazon ECS guide (#5262)",
+      "gitBlob": "77d78464a60d2b3a4af8b0dadffc182a13edef94",
+      "localPath": "public-source/metalbear-co--mirrord/README.md",
+      "url": "https://github.com/metalbear-co/mirrord/blob/c8ded0d15e27ac33c47838f7ff9d5b234e749bbe/README.md",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "d68691027f5527eb870450de1f9153344f2cf34bebfe87787fb7891d2be34cbb"
+    },
+    {
+      "repo": "score-spec/spec",
+      "path": "score-v1b1.json",
+      "commit": "1c2427db4e1c96e05956e0546e767fc994a5421d",
+      "date": "2026-07-20T01:53:53Z",
+      "subject": "Bump the ci group with 2 updates (#210)",
+      "gitBlob": "9acd54435984be59d653fb73b37980713d9b4d1e",
+      "localPath": "public-source/score-spec--spec/score-v1b1.json",
+      "url": "https://github.com/score-spec/spec/blob/1c2427db4e1c96e05956e0546e767fc994a5421d/score-v1b1.json",
+      "status": "source-read",
+      "executed": false,
+      "localSha256": "e21aa887c13c41afea4e9753f35676adef72aa729fdd1927a6bfe4a2cb785f59"
+    }
+  ],
+  "relatedPrimarySources": [
+    {
+      "name": "Dagger secrets",
+      "url": "https://docs.dagger.io/config/secrets/"
+    },
+    {
+      "name": "Dagger explicit cache/effect policy",
+      "url": "https://dagger.io/blog/cache-control-for-modules/"
+    },
+    {
+      "name": "OpenTofu state and plan encryption",
+      "url": "https://opentofu.org/docs/language/state/encryption/"
+    },
+    {
+      "name": "Temporal workflow compatibility",
+      "url": "https://docs.temporal.io/workflow-definition"
+    },
+    {
+      "name": "Octopus tenants",
+      "url": "https://octopus.com/docs/tenants"
+    },
+    {
+      "name": "Octopus runbooks",
+      "url": "https://octopus.com/docs/runbooks"
+    },
+    {
+      "name": "GitLab deployment approvals (Premium/Ultimate)",
+      "url": "https://docs.gitlab.com/ci/environments/deployment_approvals/"
+    },
+    {
+      "name": "GitLab environment auto-stop",
+      "url": "https://docs.gitlab.com/ci/environments/"
+    },
+    {
+      "name": "Dhall import resolution",
+      "url": "https://github.com/dhall-lang/dhall-lang/blob/master/standard/imports.md"
+    },
+    {
+      "name": "MCP stdio and Streamable HTTP transports",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports"
+    },
+    {
+      "name": "MCP authorization",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization"
+    }
+  ],
+  "snapshotSummary": {
+    "attempted": 56,
+    "downloaded": 56,
+    "receiptPath": "document-snapshots.json"
+  }
+}

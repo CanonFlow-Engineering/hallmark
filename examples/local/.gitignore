@@ -1,0 +1,8 @@
+build/
+installed.txt
+service.json
+schema-v1
+.hallmark/
+*.zip
+*.pem
+reviewed-plan.json

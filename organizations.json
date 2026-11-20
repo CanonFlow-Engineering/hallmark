@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-16",
+  "source": "Authenticated GitHub REST API via gh; connector organization listing was empty.",
+  "organizations": [
+    {
+      "organization": "CanonFlow-Assay",
+      "publicRepositoryCount": 17,
+      "privateRepositoryCount": 0,
+      "publicRepositories": [
+        {
+          "name": "CanonFlow-Assay/FSharpAssay.Playground",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/FSharpAssay.Playground"
+        },
+        {
+          "name": "CanonFlow-Assay/FSharpAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/FSharpAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/OpenSearchAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/OpenSearchAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/DuckDBAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/DuckDBAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/PostgresAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/PostgresAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/JavaScriptAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/JavaScriptAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/SecurityAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/SecurityAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/STEAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/STEAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/HTML5Assay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/HTML5Assay"
+        },
+        {
+          "name": "CanonFlow-Assay/DartAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/DartAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/KotlinAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/KotlinAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/SwiftAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/SwiftAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/RustAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/RustAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/PythonAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/PythonAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/TypeScriptAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/TypeScriptAssay"
+        },
+        {
+          "name": "CanonFlow-Assay/CSharpAssay.Playground",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/CSharpAssay.Playground"
+        },
+        {
+          "name": "CanonFlow-Assay/CSharpAssay",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Assay/CSharpAssay"
+        }
+      ]
+    },
+    {
+      "organization": "CanonFlow-Engineering",
+      "publicRepositoryCount": 1,
+      "privateRepositoryCount": 0,
+      "publicRepositories": [
+        {
+          "name": "CanonFlow-Engineering/workstream",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-Engineering/workstream"
+        }
+      ]
+    },
+    {
+      "organization": "CanonFlow-ONDC",
+      "publicRepositoryCount": 1,
+      "privateRepositoryCount": 0,
+      "publicRepositories": [
+        {
+          "name": "CanonFlow-ONDC/Workbench",
+          "archived": false,
+          "url": "https://github.com/CanonFlow-ONDC/Workbench"
+        }
+      ]
+    },
+    {
+      "organization": "CanonFlow-VERA",
+      "publicRepositoryCount": 0,
+      "privateRepositoryCount": 1,
+      "publicRepositories": []
+    },
+    {
+      "organization": "CanonFlowFoundation",
+      "publicRepositoryCount": 11,
+      "privateRepositoryCount": 0,
+      "publicRepositories": [
+        {
+          "name": "CanonFlowFoundation/skills",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/skills"
+        },
+        {
+          "name": "CanonFlowFoundation/CanonFlow",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/CanonFlow"
+        },
+        {
+          "name": "CanonFlowFoundation/CanonFlowLabs",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/CanonFlowLabs"
+        },
+        {
+          "name": "CanonFlowFoundation/ONDCFlow",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/ONDCFlow"
+        },
+        {
+          "name": "CanonFlowFoundation/FSharpAssay",
+          "archived": true,
+          "url": "https://github.com/CanonFlowFoundation/FSharpAssay"
+        },
+        {
+          "name": "CanonFlowFoundation/CanonFlowIncubation",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/CanonFlowIncubation"
+        },
+        {
+          "name": "CanonFlowFoundation/docs",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/docs"
+        },
+        {
+          "name": "CanonFlowFoundation/canonflowfoundation.github.io",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/canonflowfoundation.github.io"
+        },
+        {
+          "name": "CanonFlowFoundation/FSharpAssay.Playground",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/FSharpAssay.Playground"
+        },
+        {
+          "name": "CanonFlowFoundation/GSTFlow",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/GSTFlow"
+        },
+        {
+          "name": "CanonFlowFoundation/EDIFlow",
+          "archived": false,
+          "url": "https://github.com/CanonFlowFoundation/EDIFlow"
+        }
+      ]
+    }
+  ]
+}

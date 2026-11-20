@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "name": "local-example",
+  "context": "local-example",
+  "inputs": [
+    "source.txt"
+  ],
+  "allowedExecutables": [
+    "/bin/sh"
+  ],
+  "steps": [
+    {
+      "id": "build",
+      "kind": "Build",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [],
+      "operation": {
+        "type": "process",
+        "executable": "/bin/sh",
+        "arguments": [
+          "-eu",
+          "-c",
+          "mkdir -p build\ntr '[:lower:]' '[:upper:]' < source.txt > build/message.txt"
+        ]
+      },
+      "outputs": [
+        "build/message.txt"
+      ],
+      "retrySafety": "manual"
+    },
+    {
+      "id": "artifact",
+      "kind": "Build",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "build"
+      ],
+      "operation": {
+        "type": "capture",
+        "path": "build/message.txt"
+      },
+      "outputs": [],
+      "retrySafety": "reconcile"
+    },
+    {
+      "id": "install",
+      "kind": "Install",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "artifact"
+      ],
+      "operation": {
+        "type": "write-file",
+        "path": "installed.txt",
+        "content": "{{artifact.digest}}\n"
+      },
+      "outputs": [],
+      "retrySafety": "reconcile"
+    },
+    {
+      "id": "configure",
+      "kind": "Configure",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "install"
+      ],
+      "operation": {
+        "type": "write-file",
+        "path": "service.json",
+        "content": "{\"artifact\":\"{{artifact.digest}}\"}\n"
+      },
+      "outputs": [],
+      "retrySafety": "reconcile"
+    },
+    {
+      "id": "migrate",
+      "kind": "Migrate",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "configure"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "/bin/sh",
+        "arguments": [
+          "-eu",
+          "-c",
+          "if ! test -e schema-v1; then printf '1\\n' > schema-v1; fi"
+        ]
+      },
+      "outputs": [
+        "schema-v1"
+      ],
+      "retrySafety": "manual"
+    },
+    {
+      "id": "verify",
+      "kind": "Verify",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "migrate"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "/bin/sh",
+        "arguments": [
+          "-eu",
+          "-c",
+          "test \"$(cat schema-v1)\" = 1\ntest \"$(cat build/message.txt)\" = \"HELLO FROM HALLMARK\""
+        ]
+      },
+      "outputs": [],
+      "retrySafety": "reconcile"
+    },
+    {
+      "id": "release",
+      "kind": "Release",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "verify"
+      ],
+      "operation": {
+        "type": "release",
+        "version": "0.1.0"
+      },
+      "outputs": [],
+      "retrySafety": "manual"
+    }
+  ]
+}

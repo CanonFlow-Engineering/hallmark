@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "name": "playground-orders",
+  "context": "@PROJECT@",
+  "inputs": [
+    "build.py",
+    "probe.py",
+    "compose.json",
+    "source/global.json",
+    "source/Directory.Build.props",
+    "source/Directory.Build.targets",
+    "source/Directory.Packages.props",
+    "source/NuGet.config",
+    "source/.packages/CsAssay.Analyzers.0.2.0-rc.1.nupkg",
+    "source/samples/40-functional-shape-v0.1/src",
+    "verify.py"
+  ],
+  "allowedExecutables": [
+    "docker",
+    "python3"
+  ],
+  "steps": [
+    {
+      "id": "build",
+      "kind": "Build",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "build.py",
+          "orders",
+          "--cache",
+          "@NUGET_CACHE@"
+        ],
+        "environment": {}
+      },
+      "retrySafety": "manual",
+      "outputs": [
+        "application.tar.gz"
+      ],
+      "timeoutSeconds": 900
+    },
+    {
+      "id": "artifact",
+      "kind": "Build",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "build"
+      ],
+      "operation": {
+        "type": "capture",
+        "path": "application.tar.gz"
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "configure",
+      "kind": "Configure",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "artifact"
+      ],
+      "operation": {
+        "type": "write-file",
+        "path": "delivery.json",
+        "content": "{\"application\":\"orders\",\"artifact\":\"{{artifact.digest}}\"}"
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "install",
+      "kind": "Install",
+      "effect": "DesiredState",
+      "repeat": "Reconcile",
+      "needs": [
+        "configure"
+      ],
+      "operation": {
+        "type": "compose-up",
+        "file": "compose.json",
+        "project": "@PROJECT@",
+        "environment": {}
+      },
+      "retrySafety": "reconcile",
+      "outputs": [],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "exercise",
+      "kind": "Install",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "install"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "probe.py",
+          "orders",
+          "@PROJECT@-app",
+          "--port",
+          "5089",
+          "--out",
+          "behavior.json",
+          "--probe-image",
+          "mcr.microsoft.com/dotnet/sdk:10.0.301@sha256:ea8bde36c11b6e7eec2656d0e59101d4462f6bd630730f2c8201ed0572b295d5"
+        ],
+        "environment": {}
+      },
+      "retrySafety": "manual",
+      "outputs": [
+        "behavior.json"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "verify",
+      "kind": "Verify",
+      "effect": "Observation",
+      "repeat": "Reconcile",
+      "needs": [
+        "exercise"
+      ],
+      "operation": {
+        "type": "process",
+        "executable": "python3",
+        "arguments": [
+          "verify.py",
+          "orders",
+          "@PROJECT@-app",
+          "--port",
+          "5089",
+          "--report",
+          "behavior.json",
+          "--probe-image",
+          "mcr.microsoft.com/dotnet/sdk:10.0.301@sha256:ea8bde36c11b6e7eec2656d0e59101d4462f6bd630730f2c8201ed0572b295d5"
+        ]
+      },
+      "retrySafety": "reconcile",
+      "timeoutSeconds": 60
+    },
+    {
+      "id": "release",
+      "kind": "Release",
+      "effect": "Imperative",
+      "repeat": "ExecuteOnce",
+      "needs": [
+        "verify"
+      ],
+      "operation": {
+        "type": "release",
+        "version": "1.4.0"
+      },
+      "retrySafety": "manual",
+      "outputs": [],
+      "timeoutSeconds": 120
+    }
+  ]
+}

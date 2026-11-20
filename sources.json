@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-16",
+  "scope": "Public source documentation and repository metadata used for design review.",
+  "sources": [
+    {
+      "id": "dagger",
+      "url": "https://docs.dagger.io/getting-started/introduction/",
+      "usedFor": "Typed artifacts and sandboxed incremental execution; docs marked 1.0-beta."
+    },
+    {
+      "id": "dagger-secrets",
+      "url": "https://docs.dagger.io/config/secrets/",
+      "usedFor": "Secret-provider interfaces; no runtime test performed."
+    },
+    {
+      "id": "nix",
+      "url": "https://nix.dev/manual/nix/2.34/introduction.html",
+      "usedFor": "Immutable store and dependency identity."
+    },
+    {
+      "id": "opentofu",
+      "url": "https://opentofu.org/docs/language/state/locking/",
+      "usedFor": "Backend-dependent state locking and lock-failure refusal."
+    },
+    {
+      "id": "ansible",
+      "url": "https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_checkmode.html",
+      "usedFor": "Check/diff coverage is module-dependent."
+    },
+    {
+      "id": "flyway",
+      "url": "https://documentation.red-gate.com/flyway/flyway-concepts/migrations/versioned-migrations",
+      "usedFor": "Migration version/checksum and applied history."
+    },
+    {
+      "id": "liquibase",
+      "url": "https://docs.liquibase.com/secure/user-guide-5-1/what-are-preconditions",
+      "usedFor": "Database preconditions; license selection remains explicit."
+    },
+    {
+      "id": "temporal",
+      "url": "https://docs.temporal.io/activity-definition",
+      "usedFor": "Activity retry/idempotency boundary."
+    },
+    {
+      "id": "temporal-versioning",
+      "url": "https://docs.temporal.io/workflow-definition",
+      "usedFor": "Determinism and code-compatible replay."
+    },
+    {
+      "id": "argo-cd",
+      "url": "https://argo-cd.readthedocs.io/en/stable/",
+      "usedFor": "GitOps reconciliation for Kubernetes."
+    },
+    {
+      "id": "argo-rollouts",
+      "url": "https://argo-rollouts.readthedocs.io/en/stable/concepts/",
+      "usedFor": "Progressive delivery and metric-based gates."
+    },
+    {
+      "id": "sigstore",
+      "url": "https://docs.sigstore.dev/cosign/verifying/verify/",
+      "usedFor": "Signature verification tied to keys/identity."
+    },
+    {
+      "id": "slsa",
+      "url": "https://slsa.dev/spec/v1.2/provenance",
+      "usedFor": "Artifact/source/producer provenance relationships."
+    },
+    {
+      "id": "octopus",
+      "url": "https://octopus.com/docs/releases",
+      "usedFor": "Release snapshots and separately mutable tenant values."
+    },
+    {
+      "id": "harness",
+      "url": "https://developer.harness.io/docs/continuous-delivery/kb-articles/articles/harness-approval-notifications/",
+      "usedFor": "Resolved artifact/environment context for approval."
+    },
+    {
+      "id": "jfrog",
+      "url": "https://docs.jfrog.com/governance/docs/promote-a-release-bundle-v2-version",
+      "usedFor": "Immutable promotion evidence; current RLM deprecation noted."
+    }
+  ],
+  "additionalLicenseInspection": {
+    "repository": "liquibase/liquibase",
+    "path": "LICENSE.txt",
+    "gitBlob": "e7bda0e792778f03bbf1e1335962d5dd328e0a96",
+    "declaredLicense": "FSL-1.1-ALv2"
+  }
+}

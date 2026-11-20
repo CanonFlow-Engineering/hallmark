@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/Hallmark.fsproj" />
+  <Project Path="runtime/Hallmark.Runtime.fsproj" />
+  <Project Path="cli/Hallmark.Cli.fsproj" />
+  <Project Path="demo/Hallmark.Demo.fsproj" />
+  <Project Path="tests/Hallmark.Tests.fsproj" />
+</Solution>
