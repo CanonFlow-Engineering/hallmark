@@ -87,9 +87,9 @@ include a valid six-stage graph and concrete negative cases. Production
 execution was deferred at M0; remote adapters, approvals and cluster recovery remain later
 milestones until their own evidence exists.
 
-M0 is implemented locally. See [qualification](QUALIFICATION.md) for the 30
-passing behavioral tests and the separate FsAssay Inconclusive receipt. The
-remaining roadmap is planned work, not shipped adapter functionality.
+The local planner and runtime checks are recorded in
+[qualification](QUALIFICATION.md). The roadmap identifies the remaining
+profile checks.
 
 ## Executed continuation
 

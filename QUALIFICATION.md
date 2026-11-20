@@ -3,6 +3,18 @@
 Hallmark is an experimental local delivery preview. The supported verification
 sequence starts from the pinned .NET SDK in `global.json`.
 
+## Observed preview checks
+
+The 2026-11-20 checks ran on source revision `46ad1d09bfe65c3e8de6b6b9fb48e8f5f143cf5c`.
+
+| Check | Observed result |
+|---|---|
+| Locked restore and Release build | SDK 10.0.301, zero build errors. The offline container reported NU1900 because it could not fetch advisory data. |
+| Standalone xUnit v2/VSTest run | 52 passed, zero failed and zero skipped. |
+| Installed tool | `Hallmark.Cli` 0.2.0-local.1 installed from its packed archive. The `hallmark` command executed the seven-step local example and verified the signed bundle and its four artifacts. |
+| FsAssay 1.0.4 `check` | **Inconclusive**, exit 2. The check route left the required xUnit suite unexecuted. |
+| FsAssay 1.0.4 `verify` | **ToolFailure**, exit 3. The required test producer did not emit its registered TRX report. The separate VSTest run has its own result. |
+
 ## Reproduce the checks
 
 ```sh
