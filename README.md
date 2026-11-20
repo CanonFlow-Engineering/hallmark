@@ -83,7 +83,7 @@ is an experimental source handoff, not production qualification.
 
 ## Standalone repository
 
-This repository contains its SDK pin, central dependency versions, license and
-all five F# projects. No Labs checkout is required to build or run the local
+This repository contains its SDK pin, central dependency versions,
+[Apache License 2.0](LICENSE) and all five F# projects. No Labs checkout is required to build or run the local
 example. Historical receipts keep their original source identities; see
 [Publication and evidence](PUBLICATION.md).
