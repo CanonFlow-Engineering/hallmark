@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "ts-assay-policy/0.1",
+  "profile": "new",
+  "domainGlobs": ["plan-data.ts", "plan-model.ts"],
+  "boundaryGlobs": ["plan.ts"],
+  "excludedGlobs": [],
+  "requiredCommands": ["npm run check"],
+  "escapeHatches": {
+    "assertions": "forbid",
+    "nonNullAssertions": "forbid",
+    "directives": "forbid"
+  },
+  "discriminantFields": ["kind"],
+  "transportTypeNames": []
+}

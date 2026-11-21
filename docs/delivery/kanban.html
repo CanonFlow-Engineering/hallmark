@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hallmark delivery board</title>
+  <link rel="stylesheet" href="plan.css">
+  <script defer src="plan.js"></script>
+</head>
+<body data-view="kanban">
+  <a class="skip" href="#main">Skip to delivery plan</a>
+  <header class="page-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../../README.md">Hallmark</a>
+      <div class="header-tools">
+        <nav aria-label="Delivery plan views">
+          <a href="gantt.html" data-view-link>Gantt</a>
+          <a href="kanban.html" data-view-link aria-current="page">Kanban</a>
+          <a href="../../REQUIREMENTS.md#active-delivery-priorities">Requirements</a>
+        </nav>
+        <label class="theme-control" for="theme">Theme
+          <select id="theme">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Delivery board</h1>
+        <p class="lead">First prove a Rust Wallet upgrade that recovers after PostgreSQL commits and produces a bundle someone else can verify.</p>
+        <p class="muted">Open a card for its acceptance check, dependencies and evidence.</p>
+      </div>
+      <aside id="next-task" class="next-task" aria-label="Next ready task"></aside>
+    </section>
+    <div id="summary" class="summary" aria-label="Plan summary"></div>
+    <form class="filters" aria-label="Filter board">
+      <label for="phase">Release scope
+        <select id="phase">
+          <option value="">All scopes</option>
+          <option value="pilot">Wallet pilot</option>
+          <option value="mvp">Public MVP</option>
+          <option value="later">After the pilot</option>
+        </select>
+      </label>
+      <label for="search">Find a task
+        <input id="search" type="search" placeholder="Title or requirement ID">
+      </label>
+    </form>
+    <p id="result-count" class="muted results" aria-live="polite"></p>
+    <div id="view"></div>
+    <noscript><p>Enable JavaScript to see task dependencies and status. The <a href="../../ROADMAP.md">roadmap</a> has the same milestone order.</p></noscript>
+  </main>
+  <dialog id="task-dialog" aria-labelledby="task-title">
+    <form method="dialog"><button class="close" autofocus>Close</button></form>
+    <p id="task-meta" class="muted"></p>
+    <h2 id="task-title"></h2>
+    <div id="task-detail"></div>
+  </dialog>
+</body>
+</html>

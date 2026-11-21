@@ -10,12 +10,11 @@ Start with the [commands](COMMANDS.md) and [qualification](QUALIFICATION.md). Lo
 [RUNNING.md](RUNNING.md). Broader selections
 are in [FEATURES.md](FEATURES.md); unfinished work is in [ROADMAP.md](ROADMAP.md).
 
-The first planned Hallmark distribution includes a starter workspace, Dhall
-authoring, the typed F# lifecycle, an installed CLI and local MCP, and a
-clean-host path from .NET upgrade through recovery and signed release
-verification. Wallet and orders qualify the reference profile. Python and
-Kotlin/JVM workload qualification follows.
-[Reference distribution](REQUIREMENTS.md#reference-distribution) · [Counterpart selections](COMPETITORS.md).
+The maintained engine starts with the Rust Wallet recovery pilot. The F#
+preview supplies the behavioral reference. The public MVP sequence adds
+Dhall authoring, local MCP and a three-owner release to the installed Rust CLI.
+[Delivery priorities](REQUIREMENTS.md#active-delivery-priorities)
+· [Gantt](docs/delivery/gantt.html) · [Kanban](docs/delivery/kanban.html).
 
 ## Implemented
 
@@ -80,6 +79,36 @@ the repository's promotion contract and remaining qualification. Stop: no
 production deployment or distributed execution authority follows from this
 preview. CanonFlow's assurance kernel remains independent. Repository publication
 is an experimental source handoff, not production qualification.
+
+## Rust recovery slice
+
+The Rust core in `rust/` classifies an observed migration outcome using
+the frozen plan, target, operation, migration and expected checksum. The
+delivery plan tracks persistence and the installed Wallet run as the next
+work.
+
+Use the pinned Rust toolchain and build or obtain RustAssay at the revision
+in [.github/workflows/rust-core.yml](.github/workflows/rust-core.yml). Run
+the verification with that binary and a fresh evidence directory:
+
+```sh
+bash scripts/verify-rust.sh /path/to/rust-assay ec2f519a89f7d99a33d4b863d688025bc0527b02 /path/to/new-evidence
+```
+
+## Delivery plan views
+
+Open either HTML page in `docs/delivery` with its sibling assets. Both read
+the tasks in `plan-data.ts`. Use Node 20.20.2 and the locked TypeScript
+compiler to rebuild the shared browser bundle:
+
+```sh
+npm ci --prefix docs/delivery
+npm run build --prefix docs/delivery
+```
+
+The [delivery views workflow](.github/workflows/delivery-views.yml) checks
+bundle freshness and runs the pinned TypeScriptAssay on the task data,
+scheduling model and DOM adapter.
 
 ## Standalone repository
 

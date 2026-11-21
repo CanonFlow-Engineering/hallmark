@@ -1,0 +1,45 @@
+name: Rust core
+
+on:
+  push:
+    paths: ['rust/**', 'scripts/verify-rust.sh', '.github/workflows/rust-core.yml']
+  pull_request:
+    paths: ['rust/**', 'scripts/verify-rust.sh', '.github/workflows/rust-core.yml']
+
+permissions:
+  contents: read
+
+env:
+  RUSTASSAY_REVISION: ec2f519a89f7d99a33d4b863d688025bc0527b02
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v6
+        with:
+          repository: CanonFlow-Assay/RustAssay
+          ref: ${{ env.RUSTASSAY_REVISION }}
+          path: .ci/rustassay
+          persist-credentials: false
+      - name: Build the pinned checker and set up the project toolchain
+        shell: bash
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal --no-self-update
+          cargo +1.98.1 build --locked --offline --release --manifest-path .ci/rustassay/Cargo.toml --target-dir "$RUNNER_TEMP/rustassay-build"
+          project_toolchain=$(sed -n 's/^channel = "\([^"]*\)"$/\1/p' rust/rust-toolchain.toml)
+          rustup toolchain install "$project_toolchain" --profile minimal --component clippy --component rustfmt --no-self-update
+      - name: Verify Rust core
+        shell: bash
+        run: |
+          bash scripts/verify-rust.sh "$RUNNER_TEMP/rustassay-build/release/rust-assay" "$RUSTASSAY_REVISION" "$RUNNER_TEMP/hallmark-evidence"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rust-core-evidence
+          path: |
+            ${{ runner.temp }}/hallmark-evidence/
+            !${{ runner.temp }}/hallmark-evidence/target/**

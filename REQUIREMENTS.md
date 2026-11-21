@@ -10,13 +10,14 @@ and qualification reviewers. Product direction: one validated model spanning
 Build, Install, Configure, Migrate, Verify and Release, with explicit operational
 state, compatibility and recovery.
 
-**Dhall authoring and a typed F# lifecycle model are the core of Hallmark.**
+**Dhall authoring and one typed lifecycle model are the core of Hallmark.**
 Teams use Hallmark's
 Dhall schema to compose packages and declare dependencies, lifecycle stages,
 transitions and gates. Hallmark evaluates that declaration into its versioned
-workflow format. The F# model validates the result and owns planning, admission
-and recovery. CLI and Model Context Protocol (MCP) clients use the same model.
-JSON remains a supported authoring and interchange format.
+workflow format. The lifecycle model validates the result and owns planning,
+admission and recovery. Rust is the maintained engine direction under CF-067.
+CLI and Model Context Protocol (MCP) clients use the same model. JSON remains
+a supported authoring and interchange format.
 
 The 2026-11-20 recording informs the product direction. Timestamped notes
 identify supported intent where the transcript contains unclear wording.
@@ -25,7 +26,7 @@ identify supported intent where the transcript contains unclear wording.
 
 Hallmark is the delivery application for teams that need to install an app,
 upgrade its live state and prove what the release did. The installed CLI and
-local MCP server expose the same F# lifecycle decisions. A developer authors
+local MCP server expose the same lifecycle decisions. A developer authors
 the workspace, an operator applies and recovers a plan, and a reviewer can
 inspect the release evidence from a separate environment.
 
@@ -40,7 +41,7 @@ inspect the release evidence from a separate environment.
 
 ### Reference distribution
 
-The first distribution targets a trusted .NET workload on the local
+The complete reference distribution targets a trusted .NET workload on the local
 Linux/Compose profile. It uses the existing process, file and Compose
 adapters and the pinned Flyway/PostgreSQL recipe. Qualify wallet first and
 orders as the unchanged second consumer. The distribution identifies the
@@ -87,14 +88,15 @@ The source choices also inform the provider, evidence and profile backlog.
 | Developer/role workflows | Multi-package workspaces, targeted overlays, affected-package plans, generated changelogs and role-specific evidence | CF-041–CF-045 |
 | Evidence and recovery | History/schema checks, restore drills, reliable build caching, provider conformance, leased secrets and exact-scope verdicts | CF-046–CF-053 |
 | Platform operations | Expiring previews, retention, telemetry, update proposals, reusable templates, runbooks, format upgrades, optional estimates/debugging, fault qualification and protected state | CF-056–CF-066 |
-| F# implementation boundary | Functional core, explicit external-tool adapters and migration of supported research/qualification automation into F# | CF-067–CF-068 |
+| Engine implementation boundary | Rust functional core, explicit effect adapters and a qualified F# reference | CF-067–CF-068 |
 | CLI and MCP | Installed CLI for people and CI, local MCP for agents, shared plans and evidence, policy-bound effects | CF-069–CF-071 |
-| Typed authoring | Typed Dhall declarations and reproducible imports feeding the validated F# model | CF-072 |
+| Typed authoring | Typed Dhall declarations and reproducible imports feeding the validated lifecycle model | CF-072 |
 | Workloads and gates | Native .NET, Python and Kotlin/JVM projects with scoped FsAssay, CsAssay, PythonAssay and KotlinAssay gates | CF-073–CF-074 |
 | Consumer qualification | Runtime behavior of exact packages, bounded domain receipts, evidence corrections and signed release decisions | CF-075–CF-078 |
 | Application delivery profiles | Server, SaaS, browser, standalone, mobile and SDK releases with target-specific evidence and compatible upgrades | CF-079–CF-081 |
 | Reproducible upgrades | Evolution of saved inputs, typed dependency outputs, frozen workspace resolution and published migration lineage | CF-082–CF-085 |
 | Reference distribution | Installable tools, a working starter workspace, prerequisite checks and release verification on a clean host | CF-086 |
+| Release operations UI | Release and environment detail, attention queue, Kanban, downstream handoffs, run timeline, Gantt, Mermaid diagrams and operational metrics | CF-087–CF-094 |
 
 ## How to read the requirements
 
@@ -110,9 +112,10 @@ contract; **Integrate** means use a separately selected provider; **Defer** mean
 retain the option without adding it to the first implementation slice. A source
 link establishes the reviewed design reference, not an executed parity result.
 
-**P0** is required for the first upgrade-focused qualification slice. **P1** is
-required for the broader product but can follow that slice. **P2** is a later
-extension. These priorities do not imply implementation or production readiness.
+**P0** identifies a release obligation for the named profile. **P1** identifies
+broader product work. **P2** is a later extension. The active delivery
+priorities select the scope and order for the current pilot and public MVP.
+These priorities do not imply implementation or production readiness.
 Each requirement has a distinct acceptance condition. The execution status of
 new acceptance cases is pending until separately implemented and exercised.
 
@@ -147,7 +150,7 @@ verdicts or announce new adapters.
 Install, Configure, Migrate, Verify and Release. Stage dependencies must permit
 schema preparation before an application deployment and schema contraction
 after its compatibility gates. The Dhall authoring contract in CF-072 and the
-JSON workflow format must both map to this validated F# model.
+JSON workflow format must both map to this validated lifecycle model.
 
 **Acceptance:** one consumer graph expresses both sequences without an
 untracked external orchestration script; dependency cycles and undeclared
@@ -462,10 +465,18 @@ service definitions and external tools through declared adapter/process
 boundaries without rewriting application source. Raw operations must declare
 effects, inputs, ownership and recovery constraints.
 
+Reusable plugins for builds, packaging, deployment, migrations, target
+observation and release publishing must use the provider identity and
+execution contract in CF-074. Each plugin declares the stages, typed inputs
+and outputs, effects and recovery behavior it supports. Hallmark owns
+planning, policy admission, recovery decisions and release signing. Qualify
+each plugin on its declared target profile before advertising support.
+
 **Acceptance:** an identified SQL-script recipe and a raw service definition can
 participate in the same lifecycle graph; their unsupported static checks appear
 as missing evidence. An opaque imperative script cannot acquire convergent or
-transaction-safe semantics merely by being wrapped in a package.
+transaction-safe semantics merely by being wrapped in a package. Planning
+refuses an unsupported plugin stage or target profile before dispatch.
 
 **Counterparts — Integrate:** Native scripts and resource modules with explicit unsupported-preview limits. [Sqitch](https://sqitch.org/docs/manual/sqitch/), [Ansible](https://docs.ansible.com/projects/ansible/latest/playbooks_checkmode.html).
 
@@ -1156,48 +1167,45 @@ and verify the outcome against the retained state identity.
 
 **Counterparts — Adopt / Integrate:** Protect state/plan bytes and key recovery without mistaking encryption for anti-replay protection. [OpenTofu](https://opentofu.org/docs/language/state/locking/), [OpenTofu state/plan encryption](https://opentofu.org/docs/language/state/encryption/).
 
-## F# implementation and research-tool boundaries
+## Engine implementation and research-tool boundaries
 
-### CF-067 — Keep product decisions and orchestration primarily in F#
+### CF-067 — Build the maintained lifecycle engine in Rust
 
-**P0 · B/I · Owner clarification, 2026-11-20.** Hallmark's lifecycle domain,
-compatibility decisions, planning, admission, recovery and supported orchestration
-must remain F#. Expected outcomes and valid construction belong to the
-functional core; filesystem, process, network, clock, persistence and external
-producer effects belong to explicit shell/adapters under the applicable Shape
-contract. Competitor implementation languages do not select Hallmark's language.
+**P0 · B/I · Owner direction, 2026-11-21.** Build the maintained Hallmark
+engine in Rust. The F# local preview and its retained receipts provide the
+behavioral reference. Use a pure decision function with explicit state and
+observations. Filesystem, process, network, clock and persistence are adapter
+effects. Preserve existing supported workflow inputs and version shared
+contracts explicitly when the Rust engine adds a capability.
 
-**Acceptance:** a promoted implementation identifies its functional core and
-effect boundaries, retains the chosen SDK/framework and passes separate compiler
-and behavioral checks. Execute FsAssay on the actual changed projects or an
-explicit declared source scope using its producer's supported policy/commands;
-retain command, source/config/producer identities, exit and raw receipt. Missing
-required evidence remains unresolved. Neither an F# type nor a Python-to-F#
-translation by itself establishes purity, correctness or authority.
+**Acceptance:** qualify the Wallet recovery slice with the required RustAssay
+result, independent Cargo build and behavior evidence, and an installed
+execution that exercises recovery. Compare retained F# behavior where the
+same contract applies. Record commands, producer and source identities,
+scope, exits and raw receipts. Apply the FsAssay Shape and authority
+contracts to any F# reference changes. Missing required evidence remains
+unresolved under CF-053 and CF-074.
 
 **Counterparts — Adopt:** preserve the explicit provider/API boundaries useful
 in [Pulumi](https://www.pulumi.com/docs/iac/concepts/automation-api/) and
 [Score](https://docs.score.dev/docs/score-specification/score-spec-reference/).
-The F# choice comes from Hallmark's owner and existing contributor contract,
-not from either counterpart.
 
-### CF-068 — Promote reusable research automation into F# deliberately
+### CF-068 — Qualify reusable automation at the provider boundary
 
-**P1 · B/I · Owner clarification, 2026-11-20.** One-off research tools may use
+**P1 · B/I · Owner direction.** One-off research tools may use
 Python where its libraries provide an effective extraction/transcription path.
-Before such a workflow becomes maintained Hallmark automation, reusable domain
-rules, validation, orchestration and receipt handling must move to F#. A pinned
-external transcription/scanning/build provider may retain its own implementation
-language behind the declared provider contract; do not rewrite its engine solely
-to change that language.
+Implement lifecycle decisions in the Rust engine when a workflow becomes
+maintained Hallmark automation. Use pinned Python, Bash and PowerShell hooks
+and native external tools for scoped effects through the declared provider
+contract.
 
 **Acceptance:** preserve existing behavior before porting the active
 `examples/playground/prepare.py`, `build.py`, `probe.py` and `verify.py` helpers
 when they are selected for supported automation. Exercise the replacement with
 the same consumer fixtures, relevant invocation/output/exit contracts and fault
-cases; retain separate FsAssay/build/behavior evidence. Do not rewrite historical
-archived comparison recipes or relabel their receipts as checks of the
-F# replacement. A future audio-ingestion feature must bind source bytes,
+cases. Retain scoped Assay, build and behavior evidence for the replacement.
+Archived comparison recipes retain their original receipts. A future
+audio-ingestion feature must bind source bytes,
 model/provider version, parameters, timestamps, uncertainty and actual failures
 to its transcript receipt. The current disposable transcription and source-page
 snapshot scripts remain outside the product checkout and create no new Python
@@ -1291,15 +1299,15 @@ policy at execution. [MCP tools](https://modelcontextprotocol.io/specification/2
 [MCP transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports).
 [MCP authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
 
-### CF-072 — Use Dhall to author workflows for the typed F# model
+### CF-072 — Use Dhall to author workflows for the typed lifecycle model
 
 **P0 · C/I · Owner direction.** Hallmark must ship a versioned Dhall schema
 and reusable package and workspace definitions for typed parameters, package
 and stage dependencies, output references, version transitions and named
 gates. A pinned Dhall evaluator resolves and type-checks the declaration and
 normalizes it to the versioned Hallmark workflow format. The same strict
-decoder and F# domain validation must serve Dhall and direct JSON inputs. F# owns
-the lifecycle invariants, planning, gate decisions and effect boundaries.
+decoder and domain validation must serve Dhall and direct JSON inputs.
+The engine owns the lifecycle invariants, planning and gate decisions.
 
 Workflow input identity must include the resolved declaration. The frozen plan
 must also bind the authoring schema, evaluator version and content identities
@@ -1315,7 +1323,7 @@ Author the upgrade fixture in Dhall with a reusable package definition, a typed
 dependency output and Verify gates. Resolve its imports offline. The equivalent
 JSON declaration yields the same canonical workflow and plan decisions with
 the same resolved inputs. CLI and MCP return the same digest for the same
-frozen inputs. Authoring type errors, invalid F# graph invariants and missing
+frozen inputs. Authoring type errors, invalid graph invariants and missing
 or changed pinned imports produce distinct diagnostics before effects. A
 frozen plan cannot reuse evidence after its bound source or evaluator changes.
 
@@ -1330,7 +1338,7 @@ schema.
 **P0 for .NET. P1 for Python and Kotlin/JVM. · C/I · Owner direction.** Hallmark
 must support workload profiles for .NET F# and C#, Python, and Kotlin/JVM. Each
 profile must preserve the consumer's native build and test tooling, pinned
-runtime, dependency inputs and package format. The shared F# workflow must
+runtime, dependency inputs and package format. The shared workflow must
 be able to combine packages from these profiles and use their typed outputs,
 tests and Assay gates as dependencies. Reuse a consumer's native project or
 package tooling through the registered adapter. Capability discovery must
@@ -1352,17 +1360,36 @@ Use replaceable provider interfaces and a common workload contract.
 
 ### CF-074 — Enforce native Assay gates at lifecycle stages
 
-**P0 for the gate contract and .NET. P1 for Python and Kotlin/JVM. · B/I · Owner
-direction.** The Verify stage must support multiple named gates for explicitly
-declared projects or source scopes. Policy selects the applicable registered
-producer, version, profile and required evidence for each gate and names the
-dependent effects, such as publication, promotion or a protected migration.
-The Dhall and JSON authoring contracts can reference registered gates. The
-effective policy determines which gates are required. CLI and MCP must show
-each gate's status, scope and reason for admission or refusal.
+**P0 for the gate contract, Hallmark's Rust release and the .NET reference
+profiles. P1 for Python and Kotlin/JVM. · B/I · Owner direction.** The Verify
+stage must support multiple named gates for explicitly declared projects or
+source scopes. Policy selects the applicable registered producer, version,
+profile and required evidence for each gate and names the dependent effects,
+such as publication, promotion or a protected migration. Dhall and JSON
+workflows can reference registered gates. CLI and MCP must show each gate's
+status, scope, selecting policy and reason for admission or refusal.
+
+Hallmark's own Rust code must run the pinned RustAssay check in CI. Publishing
+a Hallmark release that includes Rust code requires a complete passing check
+on its declared functional-core scope and separate compiler and behavior
+evidence. Record the actual source coverage and effect adapter boundaries.
+
+RustAssay is opt-in for deployed workloads, including Rust applications.
+Teams with authority over the target policy can enable advisory reporting or
+require it before a named effect. An unconfigured workload can run without
+RustAssay installed when its other requirements are satisfied. The effective
+target policy takes precedence over a workflow's gate references.
+
+Use verifiers as the first plugin kind. Register a trusted executable and pin
+its provider ID, version, executable digest and invocation and receipt
+formats in the plan. Declare supported runners, input scope and output
+schema. Invoke the pinned tool as a bounded subprocess using its supported
+arguments. The registration describes how to interpret its native output
+and exit codes. Plugins supply evidence for Hallmark's policy decision.
 
 | Workload | Native Assay evidence to qualify | Independent evidence |
 |---|---|---|
+| Rust | RustAssay `check --json` on the declared functional core. Preserve its native lexical verdict and scope limits. [RustAssay contract](https://github.com/CanonFlow-Assay/RustAssay/blob/main/docs/CONTRACT.md). | Cargo build and tests on the pinned toolchain. Qualify the packaged executable on the claimed runner. |
 | .NET F# | FsAssay on the actual project or declared source scope. Use its supported `verify` route for registered test producers. Retain its scope and authority fields. [FsAssay verification](https://github.com/CanonFlow-Assay/FSharpAssay/blob/main/docs/refresh/usage.md). | Actual project build and behavior suite. Record producer or test-runner gaps as missing evidence. |
 | .NET C# | CsAssay `verify` or `assess` using the supported SDK and required test producer for the consumer. [CsAssay commands](https://github.com/CanonFlow-Assay/CSharpAssay#commands). | Compiler and the consumer's behavior and architecture tests where required. |
 | Python | PythonAssay `check --json` for the declared supported lexical rule and source scope. [PythonAssay contract](https://github.com/CanonFlow-Assay/PythonAssay/blob/main/docs/CONTRACT.md). | Run the project's own behavior tests and retain their results as a separate gate input. |
@@ -1381,6 +1408,13 @@ scope and outcome.
 **Acceptance criteria**
 
 Run each supported gate on an actual fixture scope and retain its raw receipt.
+A Hallmark Rust release with a finding or missing required RustAssay evidence
+holds publication. A Rust workload with no gate configured completes delivery
+on a host without RustAssay. Enable advisory reporting and observe that a
+finding remains visible while delivery can proceed. Require the same gate in
+target policy and observe that the finding holds the dependent effect.
+Replacing the pinned verifier invalidates the reviewed plan.
+
 A valid mixed-language release passes with evidence from all required producers
 and behavior suites. Then observe a failed required test, an unavailable
 producer and a receipt from different source bytes in separate cases. Each
@@ -1430,16 +1464,26 @@ runtime evidence as unqualified.
 
 ### CF-076 — Admit domain receipts within their stated scope and authority
 
-**P1 · I · ONDCFlow and EDIFlow.** A registered domain gate must declare the
-claim and observation authority it requires. Pin the producer identity and
-the profile and rule-pack identities where applicable. Retain the original
-receipt and verdict under CF-053, including the canonical `.cff` receipt
-when the producer emits one. Bind the assessment to the exact input or
+**P1 · I · GSTFlow, ONDCFlow and EDIFlow.** A registered domain gate must
+declare the claim and observation authority it requires. Pin the producer
+identity and the profile and rule-pack identities where applicable. Retain
+the original receipt and verdict under CF-053, including the canonical
+`.cff` receipt when the producer emits one. Bind the assessment to the exact input or
 projection digest, declared coverage and evaluation context, including
 the instant where it affects the result. The target policy must evaluate the
 source and independence of observations when required by that claim.
 
+A CanonFlow Format (CFF) payload digest check reports whether the payload
+matches its declared digest in the stated representation. Record that check
+with its scope. Required domain verdicts and issuer trust must be supported
+by the corresponding producer evidence under the effective target policy.
+
 **Acceptance criteria**
+
+Check a GSTFlow-style CFF wrapper with a matching payload digest and no
+trusted domain receipt. Report verified payload integrity and keep the
+required domain gate unresolved. Change the payload and observe the
+integrity check fail.
 
 Admit an ONDCFlow receipt for a matching redacted quote under a policy that
 trusts the producer for quote continuity. A changed checkpoint produces Fail.
@@ -1447,7 +1491,7 @@ A clean order-formation trace without the required independent observations
 remains Inconclusive and leaves the broader gate unsatisfied. Reject receipt
 reuse for a different profile, such as using one EDI partner's rule pack to
 cover another partner.
-[ONDCFlow profile](https://github.com/CanonFlowFoundation/ONDCFlow/blob/157eeabca7d9d48a26fe2c7f193b19a0a960f3ba/README.md) · [Redacted quote contract](https://github.com/CanonFlowFoundation/ONDCFlow/blob/157eeabca7d9d48a26fe2c7f193b19a0a960f3ba/docs/REDACTED-QUOTE-EVIDENCE-ADAPTER-V1.md) · [EDIFlow profiles](https://github.com/CanonFlowFoundation/EDIFlow/blob/72f007b657fee9f9248173d871232cbf4661de08/README.md).
+[GSTFlow CFF prototype](https://github.com/CanonFlowFoundation/GSTFlow/blob/9c783773a1e19e32577d9e1b2a7a809ec54daf6d/playground/src/ZipUploader.tsx#L18-L47) · [ONDCFlow profile](https://github.com/CanonFlowFoundation/ONDCFlow/blob/157eeabca7d9d48a26fe2c7f193b19a0a960f3ba/README.md) · [Redacted quote contract](https://github.com/CanonFlowFoundation/ONDCFlow/blob/157eeabca7d9d48a26fe2c7f193b19a0a960f3ba/docs/REDACTED-QUOTE-EVIDENCE-ADAPTER-V1.md) · [EDIFlow profiles](https://github.com/CanonFlowFoundation/EDIFlow/blob/72f007b657fee9f9248173d871232cbf4661de08/README.md).
 
 ### CF-077 — Resolve corrected evidence before reuse
 
@@ -1484,19 +1528,24 @@ composition, plan, resolved configuration, target, effective policy and
 supporting receipt digests. Include applicable approval decisions, evaluation
 time and validity limits. Record the actual milestone covered.
 
-The portable verifier checks the issuer against configured trust and verifies
-the signed artifact identities and included receipt digests. It reports the
-recorded decision and its verification scope. Any new protected effect
-evaluates current caller authority, destination scope and policy. When that
-policy requires a current disposition for reused evidence, resolve it under
-CF-077 before admitting the effect.
+Package the statement, exact artifacts and attested evidence in one
+versioned release bundle that a recipient can verify without the original
+workspace or artifact store. Identify any supplemental run records and
+history that travel with the bundle. The portable verifier checks artifact
+and evidence integrity and the issuer against configured trust. It reports
+the recorded decision, signature coverage and verification scope. Any new
+protected effect evaluates current caller authority, destination scope and
+policy. When that policy requires a current disposition for reused
+evidence, resolve it under CF-077 before admitting the effect.
 
 **Acceptance criteria**
 
 Verify a reference release from its portable bundle in a separate
-environment with an explicit trusted key. A modified bundle or unauthorized
-issuer fails verification. Reject reuse for a new effect when its configured
-policy, input or target identity differs, or when required evidence is stale.
+environment with the original artifact paths unavailable and an explicit
+trusted key. Alter an artifact and an attested receipt in separate copies.
+Both fail verification. A key for a different issuer also fails verification.
+Reject reuse for a new effect when its configured policy, input or target
+identity differs, or when required evidence is stale.
 Retrieve the historical signed decision by identity.
 
 For additional issuers and evidence sources, exercise an applicable
@@ -1706,22 +1755,226 @@ environment. Repeat the local delivery contract with orders.
 Exercise a run with an unsatisfied required gate and observe that the scoped
 release decision remains unresolved.
 
-## Roadmap and first qualification slice
+## Web interface and release coordination
 
-The first milestone applies the Dhall and F# lifecycle to one .NET application
-upgrade, from authoring and planning through release and recovery. Use the wallet
-first, then check the same contracts with the C# orders consumer. Qualify each
-additional provider on a real fixture before advertising its capabilities.
+Organize the web interface around Overview, Releases and Environments. A
+release page is the main workspace for a coordinator, operator or reviewer.
+It brings together the plan, runs, evidence and handoffs for a selected
+release and target. The board, timeline and diagrams link back to that page.
+
+### CF-087 — Inspect a release and its observed target state
+
+**P1 · I · Owner direction.** The release page must show the target,
+candidate and observed installed versions, current stage, last confirmed
+observation, blocker, responsible owner and next available action. The
+environment view must show the desired and observed state with observation
+times. Represent drift, stale observations and unknown state explicitly.
+When a connection drops, keep the last observation visible with its age
+and indicate that live updates are unavailable.
+
+Use the plan, run, release and observation identities produced by the shared
+lifecycle under CF-020, CF-038 and CF-040. Support direct links to a release
+and target, a run or a stage attempt. Reopening a link preserves its selected
+scope. Apply scope permissions to lists, links and counts.
+
+**Acceptance:** open an interrupted migration through a copied run link.
+Identify its last confirmed state and the next reconciliation action.
+Compare the browser result with the CLI and MCP results for the same run.
+Disconnect updates and observe the last confirmed observation and its age.
+Advance past its freshness window and observe the stale status. A caller
+without target access cannot retrieve the release through a direct link.
+[Argo CD desired and live state comparison](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/).
+
+### CF-088 — Review changes, evidence and protected actions
+
+**P1 · I.** Before a protected browser action, show the frozen plan, the target,
+installed-to-candidate diff and the planned operations. Identify changed
+artifacts and configuration, migration and compatibility obligations,
+affected consumers and gates blocking the operation. Present the required
+approval, evidence scope and reason for any refusal. Let a reviewer inspect
+an attempt's retained logs, original gate receipt and signed release decision
+within their permissions.
+
+Show whether each gate is required or advisory and which policy selected it.
+Keep Pass, Fail, Inconclusive, ToolFailure and missing evidence legible.
+Show the scope and time of a historical signed decision and the current
+admission result for a pending action. When browser actions are enabled, bind
+apply, approval, hold, resume and promotion to the exact plan or run, target,
+caller and current policy under CF-054, CF-071, CF-074 and CF-078. An action
+uses the shared lifecycle and returns the resulting decision or run.
+
+Provide an offline inspection view for a saved release bundle using the
+portable verifier in CF-078. Show the checked artifact and evidence scope,
+signer verification, and the recorded decision. Mark supplemental run
+records and history. Show current admission when its inputs are available
+and report it as unknown otherwise.
+
+**Acceptance:** open a plan for review, change its target baseline or withdraw
+a required receipt, and attempt the old action. The browser explains the
+refusal before effects and links to the affected evidence. An authorized
+operator can inspect the new plan and make a fresh decision. Open a valid
+bundle and an altered copy offline. Identify which evidence the signature
+covers and why the altered copy fails verification.
+[GitLab deployment approvals](https://docs.gitlab.com/ci/environments/deployment_approvals/).
+
+### CF-089 — Prioritize releases on a dashboard and Kanban board
+
+**P1 · I · Owner direction.** The dashboard must surface releases needing
+attention, active runs and environments with drift or unknown state.
+Prioritize items needing evidence, approval or reconciliation. Show the
+reason, responsible owner and time waiting. Each count and queue item links
+to its scoped records.
+
+Offer a list and a Kanban board over the same release-and-target records.
+Cards show version, current stage, blocker, owner and next available action.
+Derive lane placement from recorded lifecycle state and show the specific
+reason for waiting, failure or an unresolved outcome on the card. Filter by
+workspace, environment, owner and status. Keep filters in a shareable view.
+When supported, assignment and priority changes update coordination records.
+Lifecycle transitions use the explicit authorized actions in CF-088.
+
+**Acceptance:** show the same release in staging and production with
+different gate outcomes. The two cards report their own status and action.
+Filter to a team's pending work and open the blocking receipt. Reassign a
+card and inspect the coordination record. Check that applying a plan still
+requires its explicit action. The list and board agree on visible records
+and status.
+
+### CF-090 — Coordinate downstream handoffs and release notes
+
+**P1 · I · Owner direction.** Show downstream impact from the declared
+dependency graph. Each affected team sees the originating change and
+version, what it consumes, the action it owes and the evidence needed to
+proceed. Let the coordinator find waiting handoffs and let each team inspect
+the upstream note from its own view. Common changes reaching a consumer
+through multiple paths display once with the dependency paths available.
+
+Keep note revisions, acknowledgments and approvals as identifiable records.
+Show corrections and withdrawals on affected downstream views and surface
+pending actions that require reevaluation under CF-077. Use only notes and
+evidence the viewer is authorized to read.
+
+**Acceptance:** in the PostgreSQL, Kafka and OpenSearch fixture, an
+OpenSearch owner sees the relevant upstream change and who owes the next
+compatibility result. Withdraw that result and confirm that the team's view
+shows the correction and the pending cutover decision reflects current
+evidence. The historical decision remains inspectable by identity.
+
+### CF-091 — Show execution history and planned schedules
+
+**P1 for the execution timeline. P2 for Gantt. · I · Owner direction.**
+Show the observed timeline for a run with stage attempts, waits,
+approvals, retries and recovery observations. Link each event to its
+record and show timestamp and time zone. Mark gaps and unresolved outcomes.
+
+A Gantt view must show the planned schedule for a selected release across
+teams, dependencies and maintenance windows. Show recorded execution
+alongside the plan when available. Label forecasts and their inputs.
+Display unscheduled work and missing durations explicitly. Show a critical
+path when the dependency and timing inputs support it. A schedule preview
+shows downstream impact before any authorized schedule change is saved.
+
+**Acceptance:** interrupt an effect and confirm the timeline shows the last
+known event with the outcome unresolved. In a scheduled copy of the fixture,
+preview a two-hour PostgreSQL delay and identify the Kafka and OpenSearch
+windows it affects. The reviewed schedule retains its identity during preview.
+[Mermaid Gantt syntax](https://mermaid.js.org/syntax/gantt.html).
+
+### CF-092 — Generate diagrams on demand from identified records
+
+**P1 for dependency diagrams. P2 for additional diagram views. · I · Owner
+direction.** Generate diagrams from the selected plan, run or release.
+Show its identity, scope and observation time. Provide a structured list or
+table and let users copy Mermaid source generated from the same data. Use
+escaped labels and a trusted renderer configuration. Render the selected
+view when requested and allow users to focus on affected components.
+
+| Diagram | Question it answers |
+|---|---|
+| Dependency and impact graph | What blocks this step, and which consumers are affected? |
+| Sequence of handoffs | What did each team do, and which reply or acknowledgment is due? |
+| Recovery state | What was observed, and which recovery transitions remain available? |
+| Evidence lineage | Which sources, artifacts and receipts support this release decision? |
+
+**Acceptance:** request a dependency diagram for an identified run with a
+blocked component. Follow its upstream edge to the gate. The diagram and
+text view agree on the blocker. Regenerate Mermaid from the same selected
+records and obtain the same graph. Inspect a different plan and see its
+own edges and identity.
+[GitHub Actions visualization graph](https://docs.github.com/en/actions/how-tos/monitor-workflows/use-the-visualization-graph)
+· [Mermaid sequence diagrams](https://mermaid.js.org/syntax/sequenceDiagram.html)
+· [Mermaid state diagrams](https://mermaid.js.org/syntax/stateDiagram.html).
+
+### CF-093 — Make operational charts traceable to their runs
+
+**P2 · I.** Start with charts for wait time by gate or owner, failed and
+retried attempts by stage, and elapsed time from interruption to a known
+state. Identify the time range, population, unit and any missing data.
+Show whether counts are per release, run or attempt. Selecting a chart
+value opens the underlying records under the same scope and filters.
+
+**Acceptance:** chart a fixture with one retried stage and one run with a
+missing recovery observation. Reconcile each value to its records. The
+chart counts the retry at the attempt level and exposes the missing
+observation when reporting recovery time.
+
+### CF-094 — Make operational views accessible and responsive
+
+**P1 · I.** Core views must support keyboard navigation, visible focus,
+clear control labels and status text alongside color. Provide a list or
+table for boards, charts and graphs and a control that performs each
+supported drag action without dragging. Preserve focus across live
+updates and expose loading, empty, stale and error states. On narrow
+screens, prioritize release status, blocker, next action and evidence.
+
+**Acceptance:** using only the keyboard, find a blocked release, open its
+gate receipt and return to the originating card or row. Repeat with a
+screen reader and with the chart replaced by its table. On a narrow
+screen, inspect the same gate and target with equivalent status and
+available actions.
+[W3C complex images](https://www.w3.org/WAI/tutorials/images/complex/)
+· [WCAG dragging movements](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html)
+· [Mermaid accessibility](https://mermaid.js.org/config/accessibility.html).
+
+### First web delivery slice
+
+1. Start with a read-only release page, the attention queue, the observed
+   timeline and plan and evidence inspection on one qualified Wallet run.
+2. Use the three-owner fixture to qualify the board, downstream notes and
+   the dependency diagram. Enable review and recovery actions when they
+   meet the same policy and target checks as CLI and MCP.
+3. Add Gantt when scheduled windows and durations are available. Use real
+   run histories to qualify operational charts and additional diagrams.
+
+## Active delivery priorities
+
+The first delivery is an installed Rust CLI that upgrades the existing
+Wallet on an owned local PostgreSQL target. Interrupt the run after the
+migration commits, recover the recorded run against the migration ledger,
+and verify the resulting signed bundle independently.
+
+| Priority | Release scope | Requirements exercised |
+|---|---|---|
+| Pilot | Frozen JSON plan, one local target, durable recovery, exact migration readback, scoped producer evidence and portable signed proof. | CF-001–CF-005, CF-028, CF-038–CF-040, CF-046, CF-053, CF-067, CF-069, CF-074–CF-075, CF-078. |
+| Public MVP | Add Dhall/JSON plan parity and local MCP, then run the PostgreSQL, Kafka and OpenSearch handoff with downstream notes and an independent operator. | CF-020, CF-043–CF-045, CF-069–CF-072, CF-083–CF-084, CF-086, CF-090. |
+| After the pilot | Qualify the second unchanged workload and a release inspection page. Use observed handoff and recovery problems to choose the next provider or UI view. | CF-073, CF-079–CF-081, CF-087–CF-089, CF-091–CF-094. |
+
+The remaining requirements stay in the following qualification backlog.
+Pilot coverage is limited to the acceptance cases exercised by its fixture.
+The [Gantt chart](docs/delivery/gantt.html) and [Kanban board](docs/delivery/kanban.html)
+show the task dependencies and current status.
+
+## Broader qualification sequence
 
 | Sequence | Deliverable | Exit evidence |
 |---|---|---|
 | 0. Preserve authority and baseline | Retain existing behavior, source identities and failure receipts. Identify a supported FsAssay test producer for the implementation candidate. | Separate compiler, behavioral and actual FsAssay results with any unresolved evidence. |
-| 1. Typed authoring and local interfaces | Dhall and JSON into the F# model, installed CLI, local MCP, registered gates, typed dependency outputs and workspace resolution. CF-069–CF-074, CF-083–CF-084, CF-086. | Install the tools on a clean reference host. One authored workflow produces the same frozen plan and diagnostics through both interfaces. Refuse a wrong-stage dependency and an altered pin. |
+| 1. Typed authoring and local interfaces | Dhall and JSON into the shared model, installed CLI, local MCP, registered gates, typed dependency outputs and workspace resolution. CF-069–CF-074, CF-083–CF-084, CF-086. | Install the tools on a clean reference host. One authored workflow produces the same frozen plan and diagnostics through both interfaces. Refuse a wrong-stage dependency and an altered pin. |
 | 2. .NET reference release | Use wallet and then orders to qualify the upgrade, recovery, exact packaged runtime and local signed policy decision. CF-002–CF-011, CF-046–CF-047, CF-073–CF-075, CF-078, CF-082, CF-086. | Fresh and upgraded state agree for the declared predecessor and target. Preserve saved inputs across the transition and retry. Retain the required Assay, runtime and restore evidence and verify the signed decision in a separate environment. |
 | 3. Mixed workloads and reproduction | Qualify Python and Kotlin/JVM in CF-073–CF-074. Add published migration lineage under CF-085, targeted development and tenant reproduction. | A mixed release uses separate native gate receipts. Preserve shared migration history across branches. Reproduce an identified deployment and selected tenant state in a sandbox. |
 | 4. Consumer qualification | GSTFlow and ONDCFlow exercise CF-075–CF-076 against the registered gate contract. EDIFlow provides a second rule-pack case. | Verify the exact packaged runtime and exercise bounded domain receipt admission. Qualify only the exercised profiles. |
 | 5. Application delivery profiles | CF-079–CF-081. Use the wallet and orders service baseline to extend qualification to browser, standalone, SaaS, a registry package and one managed mobile test channel. | Profile-specific evidence, mixed-version compatibility, tenant activation, package consumption and a store-to-device test. |
-| 6. Portable providers | CF-021–CF-026, CF-033–CF-035, CF-048–CF-051 and selected F# helper ports under CF-068. | Exact provider versions and conformance cases. Separately observed VM and Kubernetes behavior. |
+| 6. Portable providers | CF-021–CF-026, CF-033–CF-035, CF-048–CF-051 and selected provider integrations under CF-068. | Exact provider versions and conformance cases. Separately observed VM and Kubernetes behavior. |
 | 7. Enterprise operation | CF-052–CF-058, CF-061–CF-062, CF-066, CF-077–CF-078, remote CF-071 and distributed CF-039. | Tenant-scoped execution and remote MCP, rollout rings, external trust and secrets, recovery, evidence corrections, signed decisions and Workstream approval qualification. |
 | 8. Optional extensions | CF-059–CF-060, CF-063–CF-064 and optional VERA recall under CF-077. | A real consumer justifies update automation, portal, estimates or traffic debugging. Evidence recall respects the same access policy and current dispositions. |
 
@@ -1807,7 +2060,7 @@ provides a retained negative case for AC-19.
 | Area | Retained local baseline | Additional requirement still to implement/qualify |
 |---|---|---|
 | Planning | Validated six-kind graph and identity-bound resume | Frozen package resolution, typed dependency outputs, target-matched predecessor checks and forward-equivalence publication gate |
-| Authoring | Versioned JSON workflow schema | Versioned Dhall package and workspace schema feeding the same F# model, with pinned imports and offline evaluation |
+| Authoring | Versioned JSON workflow schema | Versioned Dhall package and workspace schema feeding the shared model, with pinned imports and offline evaluation |
 | Interfaces | Installed CLI with help, capabilities and JSON records | CLI result compatibility and gate discovery, local MCP client qualification and policy-bound execution |
 | Database | Exercised Flyway/PostgreSQL recipe and repeated no-op migration | Edited-history rejection, schema drift, mixed-version compatibility, backfill faults and restore drills |
 | Delivery targets | Local process, files and owned Compose reconciliation | VM/service-manager and Kubernetes providers with independently qualified capabilities |
@@ -1817,12 +2070,12 @@ provides a retained negative case for AC-19.
 | Workloads and evidence | .NET wallet and orders deployments, historical 52-test Hallmark baseline and separate FsAssay Inconclusive receipt | Scoped, policy-bound FsAssay and CsAssay gates, then separately qualified PythonAssay and KotlinAssay gates in a mixed workload release |
 | Consumer qualification | Retained GSTFlow NativeAOT runtime failure | Packaged runtime checks, domain receipt admission, evidence corrections and signed release policy decisions |
 | Application delivery profiles | Local service deployment, packaged CLI and portable signed release | Browser delivery, tenant activation, standalone upgrades, mobile test channels and cross-version client compatibility |
-| Language/tooling | F# product core/runtime/CLI; Python Playground helpers already exist in the baseline | F# ports of selected maintained helpers, with original historical receipts preserved |
+| Language/tooling | F# reference core/runtime/CLI and Python Playground helpers | Rust engine with scoped hooks and retained reference evidence |
 
 ### Assumptions and useful owner inputs
 
-- **Chosen product and language.** Dhall is the typed authoring interface and F# is
-  the lifecycle implementation. JSON is a supported input and interchange
+- **Chosen product and language.** Dhall is the typed authoring interface and
+  Rust is the maintained engine direction. JSON is a supported input and interchange
   format. CUE and Score are design references and possible integrations.
 - **First users/consumer:** assume platform engineers operating self-hosted Linux
   and PostgreSQL, with wallet/orders as qualification consumers. An explicitly
@@ -1840,9 +2093,8 @@ provides a retained negative case for AC-19.
   availability/disruption budgets, RPO/RTO, offline requirements and identity
   provider are useful inputs before production qualification. They do not block
   this local requirements draft or authorize production changes.
-- **Automation:** use F# for supported Hallmark orchestration; retain effective
-  external engines behind explicit contracts. One-off Python extraction tools
-  need not be rewritten merely to discard them after research.
+- **Automation.** Rust owns lifecycle decisions. Use scoped hooks and native
+  tools through the versioned provider contract.
 
 ### Review status
 
@@ -1852,7 +2104,7 @@ outside the product checkout. The follow-up adds MCP and Dhall specifications
 and references to the four Assay producer contracts. Every requirement has an
 acceptance condition. The status table above identifies baseline behavior and
 the capabilities that still require implementation and qualification. Use
-CF-053, CF-065 and CF-067 to evaluate new F# implementation evidence.
+CF-053, CF-065, CF-067 and CF-074 to evaluate implementation evidence.
 
 ## Recording source register
 

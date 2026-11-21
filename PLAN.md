@@ -5,6 +5,12 @@ Product: Hallmark.
 Hallmark provides a typed lifecycle for build, install, configuration,
 migration, verification and release.
 
+The active work starts with the Rust Wallet recovery pilot. Track dependencies,
+status and acceptance evidence in the [Gantt chart](docs/delivery/gantt.html)
+and [Kanban board](docs/delivery/kanban.html). The
+[delivery priorities](REQUIREMENTS.md#active-delivery-priorities) set the
+release boundary for the work.
+
 Home: CanonFlow-Engineering/hallmark, alongside but separate from Workstream.
 Origin: the unpublished CanonFlowLabs experiment, retained as historical evidence.
 
@@ -103,10 +109,10 @@ full-parity claim replaces the observed qualification.
 
 ## Implementation sequence
 
-Deliver one working .NET upgrade through the existing runtime, then extend the
-same model to the other application delivery profiles. The steps below map
-implementation work to the acceptance scenarios in the requirements. The Python
-and Kotlin gate work can start once the registered gate contract is exercised.
+Qualify one Wallet upgrade through the Rust runner using the existing .NET
+application and F# preview as references. The steps below describe the broader
+qualification work. Use the active delivery plan to select the scope for
+each milestone.
 [Reference distribution](REQUIREMENTS.md#reference-distribution) · [Roadmap](ROADMAP.md).
 
 The local qualification slice includes versioned saved inputs, typed
@@ -136,18 +142,20 @@ compiler and behavioral test results as separate evidence.
 
 ### 2. Extend the typed planning and provider contracts
 
-Start with the local server profile. Extend the validated model in
-`src/Planning.fs` and the operation and recovery contracts in
-`src/Operations.fs` to describe selected package versions, observed target
-state, provider capabilities and required gates. Keep planning and admission
-decisions in F#. Use adapters for target observations and effects. Bind the
+Start with the local server profile. Use the F# planning and recovery
+contracts in `src/Planning.fs` and `src/Operations.fs` as behavioral
+references for the Rust model. Describe selected package versions, observed
+target state, provider capabilities and required gates. Keep planning and
+admission decisions in the Rust core. Use adapters for target observations
+and effects. Bind the
 profile, provider version, resolved inputs and policy to the plan identity.
 Define one versioned saved-input group and its update rules. Plan typed
 build and installed dependency outputs for the fixture. Freeze direct and
 transitive resolution with the profile and source or artifact identities.
 
-Keep current workflow documents readable through `runtime/Wire.fs` and the
-versioned schema. Exercise fresh and upgrade plans, explicit unsupported
+Keep current workflow documents readable under the versioned schema. Use
+`runtime/Wire.fs` as the reference for accepted inputs. Exercise fresh and
+upgrade plans, explicit unsupported
 targets and refusal of a checkpoint with changed inputs. A required operation
 with an unavailable provider appears in the plan diagnostics before effects.
 Reject a wrong-stage output and preserve the saved operator input in a
@@ -159,7 +167,7 @@ CF-079 and CF-082–CF-084.
 Pin a Dhall evaluator and define a package and workspace schema for the wallet
 workflow. Pin the import closure, exercise offline evaluation and map the
 result through the same workflow validation used by JSON. Share planning,
-capability and run inspection between `cli/Program.fs` and an MCP stdio host.
+capability and run inspection between the Rust CLI and an MCP stdio host.
 
 Assemble the reference distribution with the CLI, local MCP, prerequisite
 manifest, starter workspace, schemas and matching help. Install it on a clean

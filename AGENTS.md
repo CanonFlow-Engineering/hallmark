@@ -1,8 +1,9 @@
 # Hallmark contributor instructions
 
-Hallmark is an experimental F# delivery platform. Keep the planning/recovery
-core separate from the filesystem, process, network, persistence and CLI shell.
-Preserve the chosen SDK, frameworks, effect semantics and retained tests.
+Hallmark's F# preview is the behavioral reference. Build the maintained
+lifecycle engine in Rust under CF-067. Keep planning and recovery decisions
+separate from the filesystem, process, network, persistence and CLI shell.
+Preserve supported inputs, effect semantics and retained reference tests.
 
 For F# work, read the current FsAssay Shape and authority contracts from the
 identified producer, run FsAssay over the actual changed project/source scope,
@@ -11,6 +12,19 @@ and raw receipt. Run compilation and behavior tests as separate evidence. Use
 supported registered test producers; report unsupported/missing verification.
 Do not weaken test minimums, policy, scope or rule admission to obtain a pass.
 Zero admitted rules/findings does not establish purity or production readiness.
+
+For Hallmark-owned Rust changes, run the pinned RustAssay checker on the
+declared functional-core scope. Record the actual scope and effect boundaries,
+exact invocation, source and producer identities, exit and raw receipt. Run
+the Cargo build and behavior tests as separate evidence. CI and Hallmark's own
+release admission require the scoped RustAssay result under CF-074. Deployed
+workloads use the verifier according to their effective target policy.
+
+For changes to the delivery plan views, author TypeScript in
+`docs/delivery` and rebuild the browser bundle. Run TypeScriptAssay with
+the `new` policy in that directory and the producer pin in the delivery
+views workflow. Retain the native verdict and separate compiler and
+browser evidence.
 
 When the local CanonFlow skill collection is available, select relevant skills
 through its catalog. Do not claim to have used unavailable tools or guidance.

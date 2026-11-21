@@ -1,0 +1,62 @@
+name: Delivery views
+
+on:
+  push:
+    paths: ['docs/delivery/**', '.github/workflows/delivery-views.yml']
+  pull_request:
+    paths: ['docs/delivery/**', '.github/workflows/delivery-views.yml']
+
+permissions:
+  contents: read
+
+env:
+  TSASSAY_REVISION: e046dd7e56baa47d16b84fba222d449696283ae1
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: CanonFlow-Assay/TypeScriptAssay
+          ref: ${{ env.TSASSAY_REVISION }}
+          path: .ci/typescript-assay
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 20.20.2
+      - name: Build the pinned TypeScriptAssay
+        run: |
+          npm ci --prefix .ci/typescript-assay --ignore-scripts --no-audit --no-fund
+          npm run build --prefix .ci/typescript-assay
+      - name: Type-check and rebuild the offline browser bundle
+        run: |
+          npm ci --prefix docs/delivery --ignore-scripts --no-audit --no-fund
+          npm run build --prefix docs/delivery
+          git diff --exit-code -- docs/delivery/plan.js
+      - name: Require the scoped TypeScriptAssay verdict
+        shell: bash
+        run: |
+          evidence="$RUNNER_TEMP/delivery-views-evidence"
+          mkdir -- "$evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$evidence/source.txt"
+          git -C .ci/typescript-assay rev-parse HEAD > "$evidence/producer.txt"
+          node --version > "$evidence/node.txt"
+          npm --version > "$evidence/npm.txt"
+          sha256sum docs/delivery/*.ts docs/delivery/tsconfig.json docs/delivery/.tsassay.json docs/delivery/package-lock.json > "$evidence/inputs.sha256"
+          invocation=(node .ci/typescript-assay/dist/src/cli.js verify docs/delivery
+            --json "$evidence/receipt.json" --sarif "$evidence/report.sarif")
+          printf '%q ' "${invocation[@]}" > "$evidence/invocation.txt"
+          printf '\n' >> "$evidence/invocation.txt"
+          result=0
+          "${invocation[@]}" > "$evidence/stdout.log" 2> "$evidence/stderr.log" || result=$?
+          printf '%s\n' "$result" > "$evidence/exit.txt"
+          exit "$result"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: delivery-views-evidence
+          path: ${{ runner.temp }}/delivery-views-evidence/

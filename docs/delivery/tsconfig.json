@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "ES2022"],
+    "module": "none",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noEmitOnError": true,
+    "newLine": "lf",
+    "outFile": "plan.js"
+  },
+  "files": ["plan-data.ts", "plan-model.ts", "plan.ts"]
+}

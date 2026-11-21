@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "check": "tsc --noEmit --project tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "5.7.3"
+  }
+}
