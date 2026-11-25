@@ -107,7 +107,7 @@
           "-e",
           "FLYWAY_PASSWORD",
           "-e",
-          "FLYWAY_URL=jdbc:postgresql://db:5432/fsplayground_hallmark",
+          "FLYWAY_URL=jdbc:postgresql://db:5432/fsplayground_canonforge",
           "-e",
           "FLYWAY_USER=fixture",
           "flyway/flyway:13.12.1@sha256:3b4fae57858ee25735230e42f426fd200144fedbe692ea7789aa3e50a7c11657",

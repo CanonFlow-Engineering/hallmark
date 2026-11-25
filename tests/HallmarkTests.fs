@@ -1,9 +1,9 @@
-namespace Hallmark.Lab.Tests
+namespace CanonForge.Lab.Tests
 
 open System.Text.Json
 open Xunit
-open Hallmark.Lab
-open Hallmark.Lab.Serialization
+open CanonForge.Lab
+open CanonForge.Lab.Serialization
 
 module Fixtures =
     let accepted draft =

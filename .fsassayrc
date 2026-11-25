@@ -14,6 +14,6 @@
     "demo/Hallmark.Demo.fsproj"
   ],
   "shellNamespaces": [
-    "Hallmark.Lab.Serialization"
+    "CanonForge.Lab.Serialization"
   ]
 }

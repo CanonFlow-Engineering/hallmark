@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "releaseVersion": "2026.11.0",
+  "packages": [
+    {
+      "packageId": "wallet-ledger-pg",
+      "componentName": "Wallet PostgreSQL Ledger",
+      "ownerTeam": "postgres-ledger-team",
+      "currentVersion": "1.1.0",
+      "candidateVersion": "1.2.0",
+      "sourceDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "dependsOn": []
+    },
+    {
+      "packageId": "wallet-cdc-kafka",
+      "componentName": "Wallet Kafka CDC Stream",
+      "ownerTeam": "kafka-stream-team",
+      "currentVersion": "1.0.0",
+      "candidateVersion": "1.1.0",
+      "sourceDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "dependsOn": ["wallet-ledger-pg"]
+    },
+    {
+      "packageId": "wallet-search-os",
+      "componentName": "Wallet OpenSearch Projection",
+      "ownerTeam": "opensearch-projection-team",
+      "currentVersion": "1.0.0",
+      "candidateVersion": "1.1.0",
+      "sourceDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "dependsOn": ["wallet-ledger-pg", "wallet-cdc-kafka"]
+    },
+    {
+      "packageId": "backoffice-reporting",
+      "componentName": "Backoffice Static Reporting",
+      "ownerTeam": "reporting-team",
+      "currentVersion": "2.0.0",
+      "candidateVersion": "2.0.0",
+      "sourceDigest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "dependsOn": []
+    }
+  ],
+  "changeSets": [
+    {
+      "changeSetId": "CS-2026-101",
+      "packageId": "wallet-ledger-pg",
+      "classification": "AdditiveMigration",
+      "migrationVersion": "V2__index_wallet_operations",
+      "summary": "Add operations_wallet_idx on operations(wallet_id) and expose settlement_trace column in outbox CDC payload"
+    }
+  ],
+  "receipts": [
+    {
+      "packageId": "wallet-ledger-pg",
+      "ownerTeam": "postgres-ledger-team",
+      "assay": "PostgresAssay",
+      "outcome": "Pass",
+      "receiptDigest": "sha256:aaaa111111111111111111111111111111111111111111111111111111111111",
+      "sourceDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "packageId": "wallet-cdc-kafka",
+      "ownerTeam": "kafka-stream-team",
+      "assay": "FsAssay",
+      "outcome": "Pass",
+      "receiptDigest": "sha256:bbbb222222222222222222222222222222222222222222222222222222222222",
+      "sourceDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "packageId": "wallet-search-os",
+      "ownerTeam": "opensearch-projection-team",
+      "assay": "OpenSearchAssay",
+      "outcome": "Pass",
+      "receiptDigest": "sha256:cccc333333333333333333333333333333333333333333333333333333333333",
+      "sourceDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    }
+  ],
+  "corrections": []
+}

@@ -1,38 +1,34 @@
 # Hallmark qualification
 
-Hallmark is an experimental local delivery preview. The supported verification
-sequence starts from the pinned .NET SDK in `global.json`.
+Hallmark splits responsibilities across two formal components ([Architecture](docs/ARCHITECTURE.md),
+[CF-067](REQUIREMENTS.md#cf-067--unify-the-hallmark-cli-rust-and-hallmark-lifecycle-engine-f)):
 
-## Observed preview checks
-
-The 2026-11-20 checks ran on source revision `46ad1d09bfe65c3e8de6b6b9fb48e8f5f143cf5c`.
-
-| Check | Observed result |
+| Formal name | Responsibility |
 |---|---|
-| Locked restore and Release build | SDK 10.0.301, zero build errors. The offline container reported NU1900 because it could not fetch advisory data. |
-| Standalone xUnit v2/VSTest run | 52 passed, zero failed and zero skipped. |
-| Installed tool | `Hallmark.Cli` 0.2.0-local.1 installed from its packed archive. The `hallmark` command executed the seven-step local example and verified the signed bundle and its four artifacts. |
-| FsAssay 1.0.4 `check` | **Inconclusive**, exit 2. The check route left the required xUnit suite unexecuted. |
-| FsAssay 1.0.4 `verify` | **ToolFailure**, exit 3. The required test producer did not emit its registered TRX report. The separate VSTest run has its own result. |
+| **Hallmark CLI (Rust)** | Operator commands, pinned worker launch and isolation, independent bundle verification |
+| **Hallmark Lifecycle Engine (F#)** | Planning, execution, the run journal, recovery decisions, and release admission |
 
-## Reproduce the checks
+## Observed Qualification (2026-11-24)
 
-```sh
-dotnet restore Hallmark.slnx --locked-mode
-dotnet build Hallmark.slnx -c Release --no-restore
-dotnet test Hallmark.slnx -c Release --no-build --no-restore
-```
+The qualification checks use .NET 10.0.115 (`Hallmark.slnx`), Rust 1.100.0
+(`rust/Cargo.toml`), and pinned local rootless Podman images for PostgreSQL 18.7
+(`sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc`) and
+Flyway 13.12.1
+(`sha256:3b4fae57858ee25735230e42f426fd200144fedbe692ea7789aa3e50a7c11657`).
 
-Run `scripts/verify.sh TOOL_ROOT FRESH_EVIDENCE_DIR NUGET_CACHE` with the
-identified FsAssay 1.0.4 package and the script's pinned SDK image. Retain the
-exact command, producer and input identities, exit and original receipts.
-Keep build and xUnit results alongside the FsAssay verdict. The script uses
-`check`. Test verification requires a supported registered producer.
+| Evidence | Observed result |
+|---|---|
+| **FsAssay (`Hallmark.slnx`)** | **Pass (`authoritative: true`)**, exit 0, across all 5 F# projects and 17 analyzed source files, with **67/67** registered TRX behavioral, DSL parity, MCP, three-owner release coordination, operator triage, and admission tests passing. |
+| **F# Workflow DSL & Local `stdio` MCP (`HM-09`)** | `hallmarkWorkflow { ... }` Computation Expression declarations and hand-authored JSON manifests normalize to identical canonical JSON (`Wire.toJson`) and produce the exact same frozen `planDigest`. The local `stdio` MCP server (`hallmark mcp` / `runtime/Mcp.fs`) returns identical `planDigest`s and Gate B decisions, and refuses `hallmark_apply`/`hallmark_resume` unless `--allow-effects` is enabled. |
+| **Three-Owner Release Coordination & VERA Correction Fixture (`HM-10`)** | [`examples/three-owner/fixture.json`](examples/three-owner/fixture.json) and `Admission.evaluateThreeOwnerCutover` exercise three component owners (`postgres-ledger-team`, `kafka-stream-team`, `opensearch-projection-team`) plus an isolated fourth component (`backoffice-reporting`). Unresolved or VERA-withdrawn compatibility receipts hold cutover and notify downstream handoffs across deduplicated dependency paths (`CF-043–CF-045, CF-077, CF-090`). |
+| **Operator Incident Triage & Cold-Start Observation (`HM-11`)** | [`scripts/verify-operator-drill.sh`](scripts/verify-operator-drill.sh), `hallmark engine triage`, and MCP `hallmark_triage` report committed target-ledger effects (`migrate` V2), the responsible blocking owner (`opensearch-projection-team`, `VERA-CORR-2026-09`), and the safe `resume` command in one deterministic query. A cold-start isolated operator agent identified all three answers from the prepared incident workspace without prior context; an external human operator study outside the project remains a separate human-observation milestone under `CF-065`. |
+| **RustAssay (`rust/src`)** | **Pass**, exit 0, across all 5 `#![no_std]` Rust core files (`0` findings), alongside **16/16** Cargo workspace tests and `cargo clippy --all-targets -- -D warnings` (`0` warnings). |
+| **Rootless Podman Worker Launch** | `HALLMARK_WORKER_IMAGE=sha256:... hallmark engine plan` enforces a `sha256:` image digest, verifies rootless Podman (`{{.Host.Security.Rootless}} == true`), maps the host UID/GID via `--userns=keep-id:uid=1654,gid=1654`, and bind-mounts host manifest and state directories. |
+| **Six-Stage Wallet Recovery & Release Drill (`HM-08`)** | [`scripts/verify-wallet-engine.sh`](scripts/verify-wallet-engine.sh) runs the full 6-stage Wallet release (`build`, `artifact`, `install`, `configure`, `migrate` via `postgres-migrate`, `verify`, `release`) on rootless Podman PostgreSQL 18.7. Killing the runner after Flyway commits V2 leaves the run journal in `"running"` state. `hallmark engine resume` refuses a tampered V2 checksum, reconciles the committed migration from `public.flyway_schema_history` readback with **1** total Flyway dispatch, refuses release signing when bound Gate B receipts (`FsAssay`, `PostgresAssay`) are missing or have a mismatched `targetDigest`, and seals the release once valid bound receipts are present. |
+| **Independent Bundle Verification** | Both the standalone **Hallmark CLI (Rust)** (`hallmark bundle-verify`) and an isolated `--network none --read-only` rootless Podman consumer container verify the signed release bundle (`wallet-release.bundle.zip`), its ECDSA P-256 signature, its attested step evidence, and its 4 artifact SHA-256 digests using only the bundle and trusted public key. |
+| **Rust Wallet Migration Reference** | [`scripts/verify-wallet-rust.sh`](scripts/verify-wallet-rust.sh) continues to pass on both Docker and rootless Podman (`podman`). |
 
-Pack and install the CLI as shown in [README](README.md). Exercise the installed
-entry point with the [local example](examples/local/hallmark.json). Retain the
-run identity and verify its release bundle against the explicitly selected
-public key.
+Use [`scripts/verify-wallet-engine.sh`](scripts/verify-wallet-engine.sh) to reproduce the six-stage Wallet recovery and release promotion drill, and [`scripts/verify-wallet-rust.sh`](scripts/verify-wallet-rust.sh) for the standalone Rust migration pilot.
 
 ## Retained application evidence
 
@@ -44,10 +40,4 @@ original application source, compiler and runtime identities bound those runs.
 
 The GSTFlow NativeAOT build produced a captured binary. Its startup failed with
 missing F# `Printf` specialization code and the required verification blocked
-release. The 23 passing rule-engine tests describe a separate scope.
-
-The [Playground recipes](examples/playground/README.md) describe the fixture
-preparation, adapters and supported local operations. The test and receipts
-produced during the reference runs remain tied to their original sources and
-toolchains. Current implementation and profile qualification are in the
-[roadmap](ROADMAP.md).
+release. The 23 passing rule-engine tests describe a separate scope. [Roadmap](ROADMAP.md).

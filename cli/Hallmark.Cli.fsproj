@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>Hallmark.Cli</AssemblyName><PackageId>Hallmark.Cli</PackageId><PackAsTool>true</PackAsTool><ToolCommandName>hallmark</ToolCommandName><Version>0.2.0-local.1</Version></PropertyGroup>
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><AssemblyName>Hallmark.Cli</AssemblyName><PackageId>Hallmark.Cli</PackageId><PackAsTool>true</PackAsTool><ToolCommandName>hallmark-worker</ToolCommandName><Version>0.2.0-local.1</Version><PackageLicenseExpression>Apache-2.0</PackageLicenseExpression></PropertyGroup>
   <ItemGroup><Compile Include="Program.fs" /><ProjectReference Include="../runtime/Hallmark.Runtime.fsproj" /></ItemGroup>
   <ItemGroup><Content Include="../schema/workflow-v1.schema.json" Link="schema/workflow-v1.schema.json" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
 </Project>

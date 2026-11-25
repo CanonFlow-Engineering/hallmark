@@ -1,0 +1,73 @@
+name: Lifecycle Engine
+
+on:
+  push:
+    paths: ['src/**', 'runtime/**', 'cli/**', 'tests/**', 'rust/**', 'examples/**', 'scripts/**', 'Containerfile.worker', 'Hallmark.slnx', 'fsassay-policy.lock.json', '.fsassayrc', '.github/workflows/lifecycle-engine.yml']
+  pull_request:
+    paths: ['src/**', 'runtime/**', 'cli/**', 'tests/**', 'rust/**', 'examples/**', 'scripts/**', 'Containerfile.worker', 'Hallmark.slnx', 'fsassay-policy.lock.json', '.fsassayrc', '.github/workflows/lifecycle-engine.yml']
+
+permissions:
+  contents: read
+
+env:
+  FSASSAY_REVISION: eae0114a9e658a63a88dd370bc8a24c6bb8ad909
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: CanonFlow-Assay/FSharpAssay
+          ref: ${{ env.FSASSAY_REVISION }}
+          path: .ci/fsassay
+          persist-credentials: false
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          global-json-file: global.json
+      - name: Build and verify the Hallmark Lifecycle Engine (F#) with FsAssay
+        shell: bash
+        run: |
+          umask 077
+          dotnet publish .ci/fsassay/FsAssay.Runner/FsAssay.Runner.fsproj -c Release -o "$RUNNER_TEMP/fsassay-tool/bin"
+          ln -s "$RUNNER_TEMP/fsassay-tool/bin/FsAssay.Runner" "$RUNNER_TEMP/fsassay-tool/fsassay"
+          dotnet restore Hallmark.slnx --locked-mode --packages "$RUNNER_TEMP/nuget-cache"
+          dotnet build Hallmark.slnx -c Release --no-restore
+          "$RUNNER_TEMP/fsassay-tool/fsassay" verify \
+            --out-json "$RUNNER_TEMP/fsharp-evidence/fsassay.json" \
+            --test-artifacts "$RUNNER_TEMP/fsharp-evidence/tests" \
+            Hallmark.slnx
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lifecycle-engine-fsharp-evidence
+          path: ${{ runner.temp }}/fsharp-evidence/
+      - name: Fetch the pinned Wallet fixture images into rootless Podman
+        run: |
+          podman --remote=false info --format '{{.Host.Security.Rootless}}' | grep -Fxq true
+          podman --remote=false pull mcr.microsoft.com/dotnet/runtime@sha256:a355be9c88e116b76ebebf6be86b7f6091b18a30dbb0f4c4c25ebd64d3099fa9
+          podman --remote=false pull docker.io/library/postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
+          podman --remote=false pull docker.io/flyway/flyway:13.12.1@sha256:3b4fae57858ee25735230e42f426fd200144fedbe692ea7789aa3e50a7c11657
+      - name: Run the governed six-stage Wallet recovery, Gate B, and promotion drill
+        run: |
+          umask 077
+          rust_toolchain=$(sed -n 's/^channel = "\([^"]*\)"$/\1/p' rust/rust-toolchain.toml)
+          rustup toolchain install "$rust_toolchain" --profile minimal --no-self-update
+          (cd rust && cargo fetch --locked)
+          bash scripts/verify-wallet-engine.sh "$RUNNER_TEMP/wallet-engine-evidence" podman
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: wallet-engine-evidence
+          path: |
+            ${{ runner.temp }}/wallet-engine-evidence/
+            !${{ runner.temp }}/wallet-engine-evidence/target/**
+            !${{ runner.temp }}/wallet-engine-evidence/worker-build/**
+            !${{ runner.temp }}/wallet-engine-evidence/bundle/**
+            !${{ runner.temp }}/wallet-engine-evidence/consumer/hallmark
+            !${{ runner.temp }}/wallet-engine-evidence/**/signing.key
+            !${{ runner.temp }}/wallet-engine-evidence/**/secret.key
+            !${{ runner.temp }}/wallet-engine-evidence/**/secrets/**

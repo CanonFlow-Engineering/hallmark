@@ -1,0 +1,25 @@
+[package]
+name = "hallmark-cli"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+license = "Apache-2.0"
+publish = false
+
+[[bin]]
+name = "hallmark"
+path = "src/main.rs"
+
+[dependencies]
+hallmark-core = { path = ".." }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+tempfile = "3.27"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"

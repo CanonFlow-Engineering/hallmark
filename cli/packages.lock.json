@@ -17,8 +17,8 @@
       "hallmark.runtime": {
         "type": "Project",
         "dependencies": {
-          "Hallmark": "[1.0.0, )",
-          "FSharp.Core": "[9.0.300, )"
+          "FSharp.Core": "[9.0.300, )",
+          "Hallmark": "[1.0.0, )"
         }
       }
     }

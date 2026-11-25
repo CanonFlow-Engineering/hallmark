@@ -1,31 +1,39 @@
 # Hallmark delivery roadmap
 
-Measured current state is in QUALIFICATION.md. These milestones are
-promotion gates, not promises inferred from a passing command.
+Measured results and the archived reference are in
+[qualification](QUALIFICATION.md). Milestones record the promotion gates for the
+**Hallmark CLI (Rust)** and **Hallmark Lifecycle Engine (F#)** ([Architecture](docs/ARCHITECTURE.md),
+[CF-067](REQUIREMENTS.md#cf-067--unify-the-hallmark-cli-rust-and-hallmark-lifecycle-engine-f)).
+
+| Formal name | Responsibility |
+|---|---|
+| **Hallmark CLI (Rust)** | Operator commands, pinned worker launch and isolation, independent bundle verification |
+| **Hallmark Lifecycle Engine (F#)** | Planning, execution, the run journal, recovery decisions, and release admission |
 
 | Milestone | Current delivery | Remaining acceptance |
 |---|---|---|
-| M0 typed planning | F# planner implemented and separately tested. Baseline FsAssay Inconclusive. | Dhall package/workspace authoring, typed dependency outputs, frozen workspace resolution and supported Assay authority |
-| M1 local execution/artifacts | Strict wire/schema, installed CLI, process budgets, local vault, source identity, CAS and portable signed releases | Reference distribution and clean-host preflight, stable CLI and MCP contract, scoped effects, hermetic adapters and external secret providers |
-| M2 install/configuration | Real Compose targets, local locks/ownership, file/service drift, convergence and safe resume refusal | Saved-input evolution, authenticated target binding, distributed fencing, adoption/ownership transfer and hostile race tests |
-| M3 migration | Pinned Flyway/PostgreSQL recipe; actual ledger and repeated no-op migration | Target-specific predecessor checks, published migration history, incompatible mixed versions, backup/restore drills and explicit expand/contract policy |
-| M4 release | Identified composition, immutable local signing, portable verification and local channel pointers | Scoped local Hallmark decision with independent verification, then external issuers, evidence corrections and multi-environment promotion |
-| M5 durable operations | Local records, context exclusion, event integrity, cancellation and bounded documents | Durable workers, leases/fencing, lost-response recovery, concurrency/quotas, retention/GC, metrics/traces and saturation qualification |
-| M6 ecosystem | Unmodified wallet and C# source staged/deployed; GSTFlow native failure retained | Native Assay gates, browser and standalone qualification, SaaS and mobile profiles, ONDCFlow and EDIFlow domain receipts, Workstream approval evidence and optional VERA recall |
-| M7 production | Not qualified | Authn/authz, tenancy, operational ownership, compatibility/support policy, SLO/RPO/RTO and reviewed Incubation promotion |
+| M0 typed planning | Rust migration manifest with frozen target and input identities | Port the six-stage graph, then qualify Dhall authoring, typed outputs and frozen workspace resolution |
+| M1 local execution/artifacts | Installed migration CLI and bounded Docker calls | Port process execution, CAS and local secret handling. Qualify stable CLI and MCP contracts and hermetic adapters. |
+| M2 install/configuration | One identified PostgreSQL fixture and a local run lock | Port Compose ownership, file/service drift and convergence. Qualify saved inputs, adoption, authenticated targets and fencing. |
+| M3 migration | One reviewed Wallet V1-to-V2 upgrade, exact predecessor and ledger reconciliation | Published migration history, mixed versions, backup/restore drills and expand/contract policy |
+| M4 release | Archived release and verification behavior | Port signed policy decisions and portable bundles, then qualify external issuers, corrections and multi-environment promotion. |
+| M5 durable operations | Atomic local pending record and recovery after a lost result | Durable worker coordination, leases, fencing, cancellation, retention, metrics and saturation qualification |
+| M6 ecosystem | Wallet database fixture on Rust. Wallet and Orders application runs and GSTFlow failure in the archive. | Native Assay gates, app packaging, browser/standalone/SaaS/mobile profiles, domain receipts, Workstream approval and optional VERA recall |
+| M7 production | Experimental local preview | Authn/authz, tenancy, operational ownership, compatibility/support policy, SLO/RPO/RTO and reviewed Incubation promotion |
 
-## Active sequence — 2026-11-21
+## Active sequence — 2026-11-22
 
-1. Preserve the F# reference and implement the Rust recovery decision. Keep
-   native build, test and Assay results tied to their actual scopes.
-2. Persist the local run and its pending work. Exercise the Wallet migration
-   against PostgreSQL with a lost response after commit. Reconcile by ledger
-   identity and verify a signed bundle from the installed Rust CLI.
-3. Qualify Dhall/JSON parity and local MCP. Run the three-owner release with
-   downstream notes and observe where an independent operator needs help.
-4. Use that result to prioritize the release inspection UI and the next
-   unchanged consumer. Add scheduling and analytics when the workload has
-   real schedule and run data.
+1. **Delivered.** Archive the F# tree and ship the local Rust migration commands.
+   Persist pending work before Flyway dispatch and recover the committed Wallet
+   migration by reading PostgreSQL history.
+2. Port the signed release record and bundle. Bind the decision to the exact plan,
+   runtime evidence and configured RustAssay result. Verify from a clean host.
+3. Port the workflow graph and the process, file, artifact and Compose
+   operations needed for one full local delivery. Use the archived command
+   contract and retained behavior cases to qualify the port.
+4. Qualify Dhall/JSON parity and local MCP. Run the three-owner release with
+   downstream notes and observe an independent operator.
+5. Qualify the release inspection UI and the next unchanged application.
 
 [Gantt](docs/delivery/gantt.html) · [Kanban](docs/delivery/kanban.html)
 · [Active requirements](REQUIREMENTS.md#active-delivery-priorities).
@@ -60,10 +68,14 @@ promotion gates, not promises inferred from a passing command.
 
 ## Engine and provider boundaries
 
-Rust owns lifecycle decisions. Apply RustAssay to Hallmark's declared Rust
-core and use Cargo build and tests as separate evidence. Apply the current
-FsAssay Shape and authority contracts to changed F# scope. Dhall and JSON feed
-the shared workflow contract used by the CLI and MCP.
+The **Hallmark Lifecycle Engine (F#)** (`Hallmark.slnx`) owns planning, execution,
+the run journal, recovery decisions, and Gate B release admission. The
+**Hallmark CLI (Rust)** (`rust/Cargo.toml`) owns operator commands, pinned
+rootless Podman worker launch and isolation, and independent bundle
+verification. Apply `FsAssay` to `Hallmark.slnx` and `RustAssay` to Hallmark's
+declared Rust core, with Cargo build and tests as separate evidence. The existing
+Rust Wallet pilot remains the qualified migration path until the live Wallet
+promotion drill (`HM-08`) passes.
 
 External builders, migrators and gates use the pinned provider contract.
 Workloads keep their native toolchains. Qualify any maintained Playground

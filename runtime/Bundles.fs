@@ -1,4 +1,4 @@
-namespace Hallmark.Runtime
+namespace CanonForge.Runtime
 
 open System
 open System.IO
@@ -6,7 +6,7 @@ open System.IO.Compression
 open System.Text
 open System.Text.Json
 open System.Security.Cryptography
-open Hallmark.Lab.Serialization
+open CanonForge.Lab.Serialization
 
 module Bundles =
     let private artifactName (digest: string) =
@@ -15,11 +15,17 @@ module Bundles =
     let create directory runId output trustedPublicKey =
         let run = Storage.loadRun directory runId
         if run.Status<>"succeeded" then invalidOp "Only completed release runs can be bundled"
-        let releaseFiles = run.Steps |> Array.collect _.Files |> Array.filter (fun f -> Path.GetDirectoryName(f.Path)=Path.Combine(directory,"releases"))
-        if releaseFiles.Length<>1 then invalidOp "Bundle requires exactly one recorded release"
-        let release = Storage.verifyRelease releaseFiles[0].Path trustedPublicKey
+        let releaseSteps =
+            run.Steps
+            |> Array.choose (fun step ->
+                step.Files
+                |> Array.tryFind (fun f -> Path.GetDirectoryName(f.Path)=Path.Combine(directory,"releases"))
+                |> Option.map (fun file -> step.Id, file))
+        if releaseSteps.Length<>1 then invalidOp "Bundle requires exactly one recorded release"
+        let releaseStageId, releaseFile = releaseSteps[0]
+        let release = Storage.verifyRelease releaseFile.Path trustedPublicKey
         let origin = Storage.loadRun directory release.RunId
-        let steps = origin.Steps |> Array.takeWhile (fun step -> not (step.Files |> Array.exists (fun f -> f.Path=releaseFiles[0].Path)))
+        let steps = origin.Steps |> Array.takeWhile (fun step -> step.Id <> releaseStageId)
         if ContentDigest.ofText(Storage.encode steps)<>release.EvidenceDigest then invalidOp "Release evidence is not available under its recorded identity"
         Storage.verifyHistory directory |> ignore
         let output = Path.GetFullPath output
@@ -28,16 +34,22 @@ module Bundles =
         try
             use stream = new FileStream(temporary,FileMode.CreateNew,FileAccess.ReadWrite,FileShare.None)
             use archive = new ZipArchive(stream,ZipArchiveMode.Create,true)
+            let fixedEpoch = DateTimeOffset(1980,1,1,0,0,0,TimeSpan.Zero)
             let writeText name text =
                 let entry = archive.CreateEntry(name,CompressionLevel.NoCompression)
+                entry.LastWriteTime <- fixedEpoch
                 use writer = new StreamWriter(entry.Open(),UTF8Encoding(false))
                 writer.Write(text: string)
-            writeText "release.json" (Storage.readBounded releaseFiles[0].Path)
+            writeText "release.json" (Storage.readBounded releaseFile.Path)
             writeText "attested-steps.json" (Storage.encode steps)
             writeText "run.json" (Storage.encode run)
             writeText "history.ndjson" (Storage.history directory |> Array.map Storage.encode |> String.concat "\n")
-            for artifact in release.Artifacts |> Array.distinctBy _.Digest do
-                archive.CreateEntryFromFile(artifact.Path,artifactName artifact.Digest,CompressionLevel.NoCompression) |> ignore
+            for artifact in release.Artifacts |> Array.distinctBy _.Digest |> Array.sortBy _.Digest do
+                let entry = archive.CreateEntry(artifactName artifact.Digest,CompressionLevel.NoCompression)
+                entry.LastWriteTime <- fixedEpoch
+                use source = File.OpenRead artifact.Path
+                use target = entry.Open()
+                source.CopyTo target
             archive.Dispose()
             stream.Dispose()
             if not (OperatingSystem.IsWindows()) then File.SetUnixFileMode(temporary,UnixFileMode.UserRead ||| UnixFileMode.UserWrite)

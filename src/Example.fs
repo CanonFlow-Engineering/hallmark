@@ -1,6 +1,6 @@
-namespace Hallmark.Lab
+namespace CanonForge.Lab
 
-open Hallmark.Lab.Serialization
+open CanonForge.Lab.Serialization
 
 module Example =
     let sixStagePlan =
@@ -17,7 +17,7 @@ module Example =
         {
             SchemaVersion = 1
             Name = "six-stage-service"
-            ProducerDigest = ContentDigest.ofText "hallmark-lab-v1"
+            ProducerDigest = ContentDigest.ofText "canonforge-lab-v1"
             TargetDigest = ContentDigest.ofText "synthetic-local-target-v1"
             ConfigurationDigest = ContentDigest.ofText "synthetic-configuration-v1"
             PolicyDigest = ContentDigest.ofText "synthetic-policy-v1"

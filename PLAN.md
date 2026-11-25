@@ -5,7 +5,7 @@ Product: Hallmark.
 Hallmark provides a typed lifecycle for build, install, configuration,
 migration, verification and release.
 
-The active work starts with the Rust Wallet recovery pilot. Track dependencies,
+The active engine is Rust, with an installed Wallet recovery pilot. Track dependencies,
 status and acceptance evidence in the [Gantt chart](docs/delivery/gantt.html)
 and [Kanban board](docs/delivery/kanban.html). The
 [delivery priorities](REQUIREMENTS.md#active-delivery-priorities) set the
@@ -14,9 +14,9 @@ release boundary for the work.
 Home: CanonFlow-Engineering/hallmark, alongside but separate from Workstream.
 Origin: the unpublished CanonFlowLabs experiment, retained as historical evidence.
 
-Consumers: the local six-kind workflow, FSharpAssay.Playground wallet and
-CSharpAssay.Playground order API. GSTFlow NativeAOT is a retained negative
-qualification case. See QUALIFICATION.md for evidence.
+The active consumer is the Wallet database fixture. The earlier local six-kind
+workflow, Wallet API, Orders API and GSTFlow NativeAOT cases are reference
+evidence for the broader ports. [Qualification](QUALIFICATION.md).
 
 Promotion condition: a separate Incubation candidate demonstrates real-domain
 use, an unchanged second consumer, deterministic tests, offline evidence,
@@ -38,7 +38,7 @@ The assurance core keeps its existing pure contracts. The broader requested
 lifecycle belongs to a platform layer: the user's request expands the platform
 scope without requiring a migration engine inside the assurance kernel.
 
-## Work sequence
+## Original work sequence
 
 1. Inventory the authenticated GitHub organizations and current repositories.
    Inspect ownership and existing implementations before proposing new homes.
@@ -109,10 +109,9 @@ full-parity claim replaces the observed qualification.
 
 ## Implementation sequence
 
-Qualify one Wallet upgrade through the Rust runner using the existing .NET
-application and F# preview as references. The steps below describe the broader
-qualification work. Use the active delivery plan to select the scope for
-each milestone.
+The installed Rust CLI has recovered one Wallet database upgrade. Qualify the
+signed release and clean-host handoff next. Use the active delivery plan to
+select the scope for the full application and adapter ports.
 [Reference distribution](REQUIREMENTS.md#reference-distribution) · [Roadmap](ROADMAP.md).
 
 The local qualification slice includes versioned saved inputs, typed
@@ -122,29 +121,19 @@ qualified contracts into further delivery profiles.
 
 ### 1. Reproduce the baseline and identify the verifier route
 
-Freeze the source and fixture identities and run the pinned .NET 10.0.301
-baseline. Record the locked restore, Release build and existing behavioral
-tests. Use `scripts/verify.sh TOOL_ROOT FRESH_EVIDENCE_DIR NUGET_CACHE` to
-reproduce the packaged FsAssay check with the repository's policy. That script
-uses `check`. Qualify the producer-supported `verify` route separately for
-scopes with registered test producers.
-
-Record the exact invocation, source, producer, toolchain, configuration and
-policy identities, exit and raw receipts. Preserve the historical xUnit
-results and FsAssay Inconclusive receipt. Keep the pinned SDK and existing
-test framework. An unsupported test producer leaves that evidence obligation
-open until a compatible verification route is qualified.
-
-For each F# change, apply Shape to the actual core and shell boundaries and
-run FsAssay over the changed projects or declared source scope. Retain
-compiler and behavioral test results as separate evidence.
+Run the locked Rust workspace checks and the installed migration fixture.
+Record commands, source, producer, toolchain and policy identities, exit codes
+and raw receipts. For ports of prior behaviors, use the archived source,
+pinned SDK and test cases. Keep the 52 native xUnit results and the historical
+FsAssay outcomes with the archive. Qualify any required workload verifier on
+its published test producer and scope.
 [Qualification](QUALIFICATION.md) · [Contributor checks](AGENTS.md).
 
 ### 2. Extend the typed planning and provider contracts
 
-Start with the local server profile. Use the F# planning and recovery
-contracts in `src/Planning.fs` and `src/Operations.fs` as behavioral
-references for the Rust model. Describe selected package versions, observed
+Start with the local server profile. Use the archived planning and recovery
+contracts as behavioral references for the Rust graph. Describe selected
+package versions, observed
 target state, provider capabilities and required gates. Keep planning and
 admission decisions in the Rust core. Use adapters for target observations
 and effects. Bind the
@@ -153,8 +142,8 @@ Define one versioned saved-input group and its update rules. Plan typed
 build and installed dependency outputs for the fixture. Freeze direct and
 transitive resolution with the profile and source or artifact identities.
 
-Keep current workflow documents readable under the versioned schema. Use
-`runtime/Wire.fs` as the reference for accepted inputs. Exercise fresh and
+Use the archived workflow schema and parser tests for the broader wire
+compatibility port. The Rust pilot reads the migration manifest v1. Exercise fresh and
 upgrade plans, explicit unsupported
 targets and refusal of a checkpoint with changed inputs. A required operation
 with an unavailable provider appears in the plan diagnostics before effects.
@@ -215,7 +204,7 @@ contraction. Interrupt a run after an external effect, reconcile the target
 and resume with the accepted input snapshot. Verify absence of a duplicate
 effect and check the recorded diagnostics and progress. Retain each consumer's
 Assay, build, behavioral, runtime and recovery evidence for AC-01–AC-12,
-AC-17, AC-30, AC-33 and AC-35. [Existing application recipes](examples/playground/README.md).
+AC-17, AC-30, AC-33 and AC-35. [Archived application recipes](QUALIFICATION.md#retained-application-evidence).
 
 Run the exact release candidates and inspect their installed state with the
 distributed tools. Exercise an authorized local MCP apply and resume on an

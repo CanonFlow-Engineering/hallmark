@@ -17,10 +17,10 @@ python3 prepare.py wallet /path/to/FSharpAssay.Playground /tmp/cf-wallet-example
 Initialize named fixture secrets through stdin, with no trailing newline:
 
 ```bash
-python3 -c 'import secrets,sys; sys.stdout.write(secrets.token_hex(24))' | hallmark secret-set database --context cf-wallet-example --state-dir /path/to/hallmark-state
-python3 -c 'import secrets,sys; sys.stdout.write(secrets.token_hex(24))' | hallmark secret-set token --context cf-wallet-example --state-dir /path/to/hallmark-state
-hallmark plan /tmp/cf-wallet-example/hallmark.json --state-dir /path/to/hallmark-state
-hallmark apply /tmp/cf-wallet-example/hallmark.json --state-dir /path/to/hallmark-state
+python3 -c 'import secrets,sys; sys.stdout.write(secrets.token_hex(24))' | canonforge secret-set database --context cf-wallet-example --state-dir /path/to/forge-state
+python3 -c 'import secrets,sys; sys.stdout.write(secrets.token_hex(24))' | canonforge secret-set token --context cf-wallet-example --state-dir /path/to/forge-state
+canonforge plan /tmp/cf-wallet-example/canonforge.json --state-dir /path/to/forge-state
+canonforge apply /tmp/cf-wallet-example/canonforge.json --state-dir /path/to/forge-state
 ```
 
 The nine steps build/capture, install PostgreSQL, migrate through Flyway,
@@ -62,4 +62,7 @@ in ../../COMMANDS.md. Teardown retains volumes and evidence. These are local
 qualification recipes; backup/restore, production credentials, target fencing,
 external authorization and progressive rollout remain separate requirements.
 
-[Qualification](../../QUALIFICATION.md) describes the observed scope for these recipes.
+The exact research replay inputs and receipts are in ../../evidence/comparison;
+the templates are portable and contain no private fixture material. The vendor
+Weave sandbox setup and its raw documentation remain in the external research
+workspace. See ../../PARITY.md for adaptations and missing parity evidence.

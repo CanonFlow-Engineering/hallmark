@@ -112,7 +112,7 @@
         "arguments": [
           "-eu",
           "-c",
-          "test \"$(cat schema-v1)\" = 1\ntest \"$(cat build/message.txt)\" = \"HELLO FROM HALLMARK\""
+          "test \"$(cat schema-v1)\" = 1\ntest \"$(cat build/message.txt)\" = \"HELLO FROM CANONFORGE\""
         ]
       },
       "outputs": [],

@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Planning.fs" />
     <Compile Include="Operations.fs" />
     <Compile Include="Serialization.fs" />
+    <Compile Include="Admission.fs" />
     <Compile Include="Example.fs" />
   </ItemGroup>
 </Project>

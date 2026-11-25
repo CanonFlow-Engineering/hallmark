@@ -120,9 +120,9 @@
   ],
   "requiredTests": [
     {
-      "id": "hallmark-xunit-suite",
+      "id": "hallmark-lifecycle-suite",
       "project": "tests/Hallmark.Tests.fsproj",
-      "minimumPassed": 52
+      "minimumPassed": 78
     }
   ],
   "baseline": {

@@ -1,4 +1,4 @@
-namespace Hallmark.Lab
+namespace CanonForge.Lab
 
 open System
 open System.Text.RegularExpressions
