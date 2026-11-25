@@ -2,9 +2,9 @@ name: Rust core
 
 on:
   push:
-    paths: ['rust/**', 'scripts/verify-rust.sh', '.github/workflows/rust-core.yml']
+    paths: ['rust/**', 'examples/rust-wallet/**', 'scripts/verify-rust.sh', 'scripts/verify-wallet-rust.sh', '.github/workflows/rust-core.yml']
   pull_request:
-    paths: ['rust/**', 'scripts/verify-rust.sh', '.github/workflows/rust-core.yml']
+    paths: ['rust/**', 'examples/rust-wallet/**', 'scripts/verify-rust.sh', 'scripts/verify-wallet-rust.sh', '.github/workflows/rust-core.yml']
 
 permissions:
   contents: read
@@ -32,6 +32,9 @@ jobs:
           cargo +1.98.1 build --locked --offline --release --manifest-path .ci/rustassay/Cargo.toml --target-dir "$RUNNER_TEMP/rustassay-build"
           project_toolchain=$(sed -n 's/^channel = "\([^"]*\)"$/\1/p' rust/rust-toolchain.toml)
           rustup toolchain install "$project_toolchain" --profile minimal --component clippy --component rustfmt --no-self-update
+      - name: Fetch the locked project dependencies
+        working-directory: rust
+        run: cargo fetch --locked
       - name: Verify Rust core
         shell: bash
         run: |
@@ -43,3 +46,18 @@ jobs:
           path: |
             ${{ runner.temp }}/hallmark-evidence/
             !${{ runner.temp }}/hallmark-evidence/target/**
+      - name: Fetch the pinned Wallet fixture images
+        run: |
+          docker pull postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
+          docker pull flyway/flyway:13.12.1@sha256:3b4fae57858ee25735230e42f426fd200144fedbe692ea7789aa3e50a7c11657
+      - name: Interrupt and recover the installed Wallet pilot
+        run: bash scripts/verify-wallet-rust.sh "$RUNNER_TEMP/wallet-evidence"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wallet-recovery-evidence
+          path: |
+            ${{ runner.temp }}/wallet-evidence/
+            !${{ runner.temp }}/wallet-evidence/target/**
+            !${{ runner.temp }}/wallet-evidence/bundle/**
+            !${{ runner.temp }}/wallet-evidence/consumer/hallmark

@@ -1,4 +1,4 @@
-namespace Hallmark.Runtime
+namespace CanonForge.Runtime
 
 open System
 open System.IO
@@ -11,7 +11,7 @@ type ProcessResult = { ExitCode: int; Status: string; Stdout: string; Stderr: st
 
 module Processes =
     let inheritedEnvironment () =
-        ["PATH";"HOME";"TMPDIR";"LANG";"LC_ALL";"SystemRoot";"ComSpec";"DOCKER_HOST";"DOCKER_CONTEXT";"DOCKER_CONFIG";"SSL_CERT_FILE";"SSL_CERT_DIR"]
+        ["PATH";"HOME";"TMPDIR";"LANG";"LC_ALL";"SystemRoot";"ComSpec";"DOCKER_HOST";"DOCKER_CONTEXT";"DOCKER_CONFIG";"SSL_CERT_FILE";"SSL_CERT_DIR";"XDG_RUNTIME_DIR";"XDG_CONFIG_HOME";"XDG_DATA_HOME";"DBUS_SESSION_BUS_ADDRESS"]
         |> List.choose (fun key -> Environment.GetEnvironmentVariable key |> Option.ofObj |> Option.map (fun value -> key,value))
     let executable (value: string) =
         let paths =

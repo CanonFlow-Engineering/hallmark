@@ -2,7 +2,7 @@
 """Observe a completed fixture exercise and current loopback availability.
 
 The exercise is an explicit imperative lifecycle step. This observation does
-not submit orders or debit wallets. Hallmark binds the preceding report bytes
+not submit orders or debit wallets. CanonForge binds the preceding report bytes
 and refuses output drift before release.
 """
 import argparse

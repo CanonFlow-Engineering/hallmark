@@ -23,8 +23,8 @@ printf '%s\n' "$producer" > "$evidence/rustassay-source.txt"
 sha256sum -- "$checker" > "$evidence/rustassay-binary.sha256"
 
 source_identities() {
-    sha256sum -- Cargo.toml Cargo.lock rust-toolchain.toml ../scripts/verify-rust.sh
-    find src tests -type f -print0 | sort -z | xargs -0 sha256sum --
+    sha256sum -- Cargo.toml cli/Cargo.toml Cargo.lock rust-toolchain.toml ../scripts/verify-rust.sh
+    find src tests cli/src -type f -print0 | sort -z | xargs -0 sha256sum --
 }
 
 run_check() {
@@ -47,10 +47,10 @@ if ! grep -Fxq -- "release: $expected" "$evidence/compiler.stdout"; then
 fi
 
 failed=0
-run_check format format.stdout cargo fmt --check || failed=1
-run_check build build.stdout cargo build --locked --offline || failed=1
-run_check test test.stdout cargo test --locked --offline || failed=1
-run_check clippy clippy.stdout cargo clippy --all-targets --locked --offline -- -D warnings || failed=1
+run_check format format.stdout cargo fmt --all --check || failed=1
+run_check build build.stdout cargo build --workspace --locked --offline || failed=1
+run_check test test.stdout cargo test --workspace --locked --offline || failed=1
+run_check clippy clippy.stdout cargo clippy --workspace --all-targets --locked --offline -- -D warnings || failed=1
 run_check rustassay rustassay.json "$checker" check src --json || failed=1
 source_identities > "$evidence/inputs-after.sha256"
 if ! cmp -s -- "$evidence/inputs.sha256" "$evidence/inputs-after.sha256"; then

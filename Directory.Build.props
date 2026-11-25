@@ -6,7 +6,5 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FSharp.Core" />
-    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="/" />
-    <None Include="$(MSBuildThisFileDirectory)NOTICE" Pack="true" PackagePath="/" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
 # Hallmark architecture
 
-The platform owns one typed plan and evidence model. Existing tools can execute
-its bounded operations through adapters. The first implementation models and
-validates plans only; a planned operation is not a completed operation.
+The platform owns one typed plan and evidence model. The diagram describes the
+target architecture. The current Rust implementation covers the
+[migration path](#implemented-rust-migration-path).
 
 ```mermaid
 flowchart TD
@@ -36,14 +36,11 @@ flowchart TD
   into a convergent operation.
 - Dependencies and input identities participate in plan identity. Stage order
   in the submitted document does not alter the identity of the same plan.
-- Preview, admission and execution are different evidence stages. M0 can create
-  a preview record only. A supplied checkpoint claim is not trusted completion
-  evidence merely because its digest and stage name match.
+- Preview, admission and execution are separate evidence stages. A checkpoint
+  requires matching observations through the selected provider.
 
-The initial implementation limits a plan to 256 stages. It performs no
-subprocess, filesystem, network, secret-store or database operation while
-validating the typed input. Parsing an untrusted wire document, adapter
-authorization and verifying checkpoint provenance are subsequent boundaries.
+The archived graph planner limited a plan to 256 stages. Its immutable validation
+and checkpoint checks supply behavioral cases for the Rust graph port.
 
 ## Adapter boundary
 
@@ -100,20 +97,20 @@ Later milestones must qualify each adapter independently, then exercise the
 whole consumer flow. Database rollback, application rollback and infrastructure
 reconciliation are separate operations with separate preconditions and evidence.
 
-## Executed local preview
+## Implemented Rust migration path
 
-The current layers are `src` (planning/recovery types plus the explicitly scoped
-serialization shell), `runtime` (wire, state, processes, bundles and execution),
-and `cli` (composition and commands). Runtime operations are a closed F# union;
-external engines are explicit process recipes. Local context identity is not
-remote target authentication.
+- `rust/src` contains the pure Flyway history comparison, checksum and recovery
+  decisions. RustAssay checks that directory.
+- `rust/cli/src/plan.rs` reads a versioned manifest and fixes the input, target,
+  adapter and producer identities in a plan digest.
+- `rust/cli/src/state.rs` stores one plan and operation in a checksummed record.
+  Atomic replacement and file and directory sync protect the pending checkpoint
+  before dispatch. A state directory lock excludes competing local writers.
+- `rust/cli/src/postgres.rs` runs pinned Flyway and reads the PostgreSQL ledger.
+  The CLI observes a matching commit before recording success. Resume reads the
+  ledger and leaves an unresolved outcome pending.
 
-Fresh execution records imperative fixture exercise separately from read-only
-Verify. Convergence reuses that exercise and prior build/migration/release, repairs
-desired state, and observes availability. Source and output hashes, secret
-versions, inherited environment, executable bytes and producer assemblies bind
-reuse; a checksum does not establish authority.
-
-Operational contracts, budgets and limits are in COMMANDS.md. Historical M0
-claims above refer to that milestone; the current implemented subset and
-unqualified distributed/enterprise boundaries are in QUALIFICATION.md and ROADMAP.md.
+The [archived preview](QUALIFICATION.md#archived-f-preview) contains the earlier
+graph, operations, convergence and signing implementation. The
+[command reference](COMMANDS.md) and [roadmap](ROADMAP.md) describe the current
+execution contract and its next ports.

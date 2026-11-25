@@ -1,11 +1,11 @@
-namespace Hallmark.Lab.Serialization
+namespace CanonForge.Lab.Serialization
 
 open System
 open System.IO
 open System.Text
 open System.Text.Json
 open System.Security.Cryptography
-open Hallmark.Lab
+open CanonForge.Lab
 
 module ContentDigest =
     let ofText (text: string) =

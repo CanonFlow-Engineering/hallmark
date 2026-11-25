@@ -76,11 +76,9 @@ implementation cost through an actual consumer and failure test.
 
 ## Current implementation evidence
 
-The Delivery column above is the original selection sequence. Actual local
-delivery now includes the F# graph, strict wire/schema, installed CLI, process and
-Compose adapters, named/versioned local secrets, CAS, safe resume refusal, live
-drift/convergence, Flyway recipe, immutable local releases, offline bundles and
-local pointers. QUALIFICATION.md separates these executed results from proposed Dagger,
-Nix, OpenTofu, Ansible, Argo, Sigstore and enterprise integrations. No reviewed
-product name is advertised as an implemented adapter merely because it appears
-in this selection.
+The Rust engine implements reviewed plan identity, durable local recovery and
+Flyway/PostgreSQL readback for one migration. The archived preview supplies
+behavioral references for the six-stage graph, process and Compose adapters,
+local secrets, artifacts, convergence and portable signed releases. These
+capabilities have individual Rust port and qualification milestones.
+[Qualification](QUALIFICATION.md) · [Roadmap](ROADMAP.md).

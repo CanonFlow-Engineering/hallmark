@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stage a real Playground app and identified Hallmark recipe without editing its checkout."""
+"""Stage a real Playground app and identified CanonForge recipe without editing its checkout."""
 import argparse
 import hashlib
 import json
@@ -69,14 +69,14 @@ def main():
             return {key: resolve(item) for key, item in value.items()}
         return value
 
-    for name in ["hallmark.json", "compose.json"] + (["compose-db.json"] if args.profile == "wallet" else []):
+    for name in ["canonforge.json", "compose.json"] + (["compose-db.json"] if args.profile == "wallet" else []):
         path = destination / name
         definition = resolve(json.loads(path.read_text()))
-        if name == "hallmark.json":
+        if name == "canonforge.json":
             definition["inputs"].append("source-provenance.json")
             definition["inputs"] += ["source/" + name for name in [".editorconfig", ".csassay.json"] if (stage / name).is_file()]
         path.write_text(json.dumps(definition, indent=2) + "\n")
-    print(json.dumps({"workspace": str(destination), "project": args.project, "manifest": str(destination / "hallmark.json"), "sdkImage": PROFILES[args.profile][0]}))
+    print(json.dumps({"workspace": str(destination), "project": args.project, "manifest": str(destination / "canonforge.json"), "sdkImage": PROFILES[args.profile][0]}))
 
 
 if __name__ == "__main__":

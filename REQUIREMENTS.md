@@ -88,7 +88,7 @@ The source choices also inform the provider, evidence and profile backlog.
 | Developer/role workflows | Multi-package workspaces, targeted overlays, affected-package plans, generated changelogs and role-specific evidence | CF-041–CF-045 |
 | Evidence and recovery | History/schema checks, restore drills, reliable build caching, provider conformance, leased secrets and exact-scope verdicts | CF-046–CF-053 |
 | Platform operations | Expiring previews, retention, telemetry, update proposals, reusable templates, runbooks, format upgrades, optional estimates/debugging, fault qualification and protected state | CF-056–CF-066 |
-| Engine implementation boundary | Rust functional core, explicit effect adapters and a qualified F# reference | CF-067–CF-068 |
+| Engine implementation boundary | Rust functional core, explicit effect adapters and an archived behavioral reference | CF-067–CF-068 |
 | CLI and MCP | Installed CLI for people and CI, local MCP for agents, shared plans and evidence, policy-bound effects | CF-069–CF-071 |
 | Typed authoring | Typed Dhall declarations and reproducible imports feeding the validated lifecycle model | CF-072 |
 | Workloads and gates | Native .NET, Python and Kotlin/JVM projects with scoped FsAssay, CsAssay, PythonAssay and KotlinAssay gates | CF-073–CF-074 |
@@ -1169,22 +1169,38 @@ and verify the outcome against the retained state identity.
 
 ## Engine implementation and research-tool boundaries
 
-### CF-067 — Build the maintained lifecycle engine in Rust
+### CF-067 — Unify the Hallmark CLI (Rust) and Hallmark Lifecycle Engine (F#)
 
-**P0 · B/I · Owner direction, 2026-11-21.** Build the maintained Hallmark
-engine in Rust. The F# local preview and its retained receipts provide the
-behavioral reference. Use a pure decision function with explicit state and
-observations. Filesystem, process, network, clock and persistence are adapter
-effects. Preserve existing supported workflow inputs and version shared
-contracts explicitly when the Rust engine adds a capability.
+**P0 · B/I · Owner direction, 2026-11-24.** Split Hallmark across two formal
+components with one run journal:
 
-**Acceptance:** qualify the Wallet recovery slice with the required RustAssay
-result, independent Cargo build and behavior evidence, and an installed
-execution that exercises recovery. Compare retained F# behavior where the
-same contract applies. Record commands, producer and source identities,
-scope, exits and raw receipts. Apply the FsAssay Shape and authority
-contracts to any F# reference changes. Missing required evidence remains
-unresolved under CF-053 and CF-074.
+| Formal name | Responsibility |
+|---|---|
+| Hallmark CLI (Rust) | Operator commands, pinned worker launch and isolation, independent bundle verification |
+| Hallmark Lifecycle Engine (F#) | Planning, execution, the run journal, recovery decisions, and release admission |
+
+Give the **Hallmark Lifecycle Engine (F#)** (`Hallmark.slnx`) ownership of
+six-stage workflow planning, execution, the run journal, target-aware recovery
+decisions, convergence and Gate B release admission. Give the **Hallmark CLI
+(Rust)** (`rust/Cargo.toml`) ownership of the installed operator CLI
+(`hallmark`), pinned rootless Podman worker launch and isolation
+(`Containerfile.worker`), and independent verification of signed release
+bundles. Use pure decision functions with explicit state and observations across
+both boundaries. Filesystem, process, network, clock and persistence remain
+adapter effects. Retain the qualified Rust Wallet migration pilot as the
+qualified migration path and behavioral reference until the F# PostgreSQL
+adapter passes the clean-install Wallet recovery and release promotion drill.
+
+**Acceptance:** qualify the **Hallmark Lifecycle Engine (F#)** with an
+authoritative `FsAssay` `Pass` (including registered TRX test execution) and the
+**Hallmark CLI (Rust)** core with `RustAssay` `Pass`, independent Cargo build
+and behavior evidence. Enforce Gate B at release signing using receipts bound to
+the exact plan, source, policy and target digests over the release stage's own
+verification ancestors. Prove on a clean install that missing or mismatched
+receipts prevent signing, an interruption after a PostgreSQL commit recovers
+from ledger readback with one migration dispatch, and a separate consumer
+verifies the signed release bundle against its trust inputs. Missing required
+evidence remains unresolved under CF-053 and CF-074.
 
 **Counterparts — Adopt:** preserve the explicit provider/API boundaries useful
 in [Pulumi](https://www.pulumi.com/docs/iac/concepts/automation-api/) and
@@ -1199,8 +1215,8 @@ maintained Hallmark automation. Use pinned Python, Bash and PowerShell hooks
 and native external tools for scoped effects through the declared provider
 contract.
 
-**Acceptance:** preserve existing behavior before porting the active
-`examples/playground/prepare.py`, `build.py`, `probe.py` and `verify.py` helpers
+**Acceptance:** preserve existing behavior before porting the archived
+Playground preparation, build, probe and verification helpers
 when they are selected for supported automation. Exercise the replacement with
 the same consumer fixtures, relevant invocation/output/exit contracts and fault
 cases. Retain scoped Assay, build and behavior evidence for the replacement.
@@ -1299,39 +1315,27 @@ policy at execution. [MCP tools](https://modelcontextprotocol.io/specification/2
 [MCP transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports).
 [MCP authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
 
-### CF-072 — Use Dhall to author workflows for the typed lifecycle model
+### CF-072 — Use the pure F# workflow DSL and canonical JSON for the typed lifecycle model
 
-**P0 · C/I · Owner direction.** Hallmark must ship a versioned Dhall schema
-and reusable package and workspace definitions for typed parameters, package
-and stage dependencies, output references, version transitions and named
-gates. A pinned Dhall evaluator resolves and type-checks the declaration and
-normalizes it to the versioned Hallmark workflow format. The same strict
-decoder and domain validation must serve Dhall and direct JSON inputs.
-The engine owns the lifecycle invariants, planning and gate decisions.
-
-Workflow input identity must include the resolved declaration. The frozen plan
-must also bind the authoring schema, evaluator version and content identities
-of the source and transitive imports. Provide offline resolution for the pinned
-local import closure. Validate the allowed import sources before resolution.
-Require explicit policy and integrity pins for any enabled remote imports.
-Use declared secret references for credentials and restrict ambient environment
-and out-of-workspace reads at the evaluation boundary.
+**P0 · C/I · Owner direction, 2026-11-24.** Hallmark ships a versioned JSON
+Schema (`schema/workflow-v1.schema.json`) and the pure F# Computation Expression
+workflow DSL (`hallmarkWorkflow { ... }` and `hallmark { ... }`) for typed
+stages, dependencies, output references, version transitions and named Gate B
+verifiers. The F# DSL emits canonical workflow JSON (`Wire.toJson`) and shares
+the same strict decoder (`Wire.parse`) and domain planner (`Planning.validate`,
+`Runner.prepare`) as direct JSON workflow manifests. The **Hallmark Lifecycle
+Engine (F#)** owns the lifecycle invariants, planning and Gate B decisions.
 
 **Acceptance criteria**
 
-Author the upgrade fixture in Dhall with a reusable package definition, a typed
-dependency output and Verify gates. Resolve its imports offline. The equivalent
-JSON declaration yields the same canonical workflow and plan decisions with
-the same resolved inputs. CLI and MCP return the same digest for the same
-frozen inputs. Authoring type errors, invalid graph invariants and missing
-or changed pinned imports produce distinct diagnostics before effects. A
-frozen plan cannot reuse evidence after its bound source or evaluator changes.
-
-Use typed package and workspace declarations and integrate
-Dhall's import, type-checking and normalization semantics for Hallmark's
-schema.
-[Dhall semantics](https://github.com/dhall-lang/dhall-lang/blob/master/standard/README.md).
-[Dhall imports](https://github.com/dhall-lang/dhall-lang/blob/master/standard/imports.md).
+Author a six-stage workflow in the F# `hallmarkWorkflow { ... }` DSL with a
+typed dependency output and Verify gates, and emit its canonical JSON via
+`Wire.toJson`. The equivalent JSON declaration yields the identical canonical
+workflow and frozen `planDigest` (`Runner.prepare`). The **Hallmark CLI (Rust)**
+and the local `stdio` MCP server (`hallmark mcp`) return the same `planDigest`,
+`sourceDigest`, `policyDigest`, `targetDigest`, and Gate B decisions for the
+same frozen inputs. Invalid graph invariants, undeclared output references, and
+missing inputs produce deterministic diagnostics before effects.
 
 ### CF-073 — Deliver .NET, Python and Kotlin workloads in one lifecycle
 
@@ -1948,15 +1952,14 @@ available actions.
 
 ## Active delivery priorities
 
-The first delivery is an installed Rust CLI that upgrades the existing
-Wallet on an owned local PostgreSQL target. Interrupt the run after the
-migration commits, recover the recorded run against the migration ledger,
-and verify the resulting signed bundle independently.
+The installed Rust CLI recovers the Wallet database upgrade on an owned local
+PostgreSQL target. The next acceptance step is to sign the scoped release
+decision and verify the portable bundle independently.
 
 | Priority | Release scope | Requirements exercised |
 |---|---|---|
 | Pilot | Frozen JSON plan, one local target, durable recovery, exact migration readback, scoped producer evidence and portable signed proof. | CF-001–CF-005, CF-028, CF-038–CF-040, CF-046, CF-053, CF-067, CF-069, CF-074–CF-075, CF-078. |
-| Public MVP | Add Dhall/JSON plan parity and local MCP, then run the PostgreSQL, Kafka and OpenSearch handoff with downstream notes and an independent operator. | CF-020, CF-043–CF-045, CF-069–CF-072, CF-083–CF-084, CF-086, CF-090. |
+| Public MVP | Port the typed graph and local effect adapters. Add Dhall/JSON plan parity and local MCP, then run the PostgreSQL, Kafka and OpenSearch handoff with downstream notes and an independent operator. | CF-001–CF-005, CF-020, CF-043–CF-045, CF-069–CF-072, CF-083–CF-084, CF-086, CF-090. |
 | After the pilot | Qualify the second unchanged workload and a release inspection page. Use observed handoff and recovery problems to choose the next provider or UI view. | CF-073, CF-079–CF-081, CF-087–CF-089, CF-091–CF-094. |
 
 The remaining requirements stay in the following qualification backlog.
@@ -1968,7 +1971,7 @@ show the task dependencies and current status.
 
 | Sequence | Deliverable | Exit evidence |
 |---|---|---|
-| 0. Preserve authority and baseline | Retain existing behavior, source identities and failure receipts. Identify a supported FsAssay test producer for the implementation candidate. | Separate compiler, behavioral and actual FsAssay results with any unresolved evidence. |
+| 0. Preserve authority and baseline | Pin the archived preview and retain its toolchain, behaviors and receipts. Qualify the active Rust checks and the scoped RustAssay producer. | Separate compiler, behavioral and Assay results tied to each subject. |
 | 1. Typed authoring and local interfaces | Dhall and JSON into the shared model, installed CLI, local MCP, registered gates, typed dependency outputs and workspace resolution. CF-069–CF-074, CF-083–CF-084, CF-086. | Install the tools on a clean reference host. One authored workflow produces the same frozen plan and diagnostics through both interfaces. Refuse a wrong-stage dependency and an altered pin. |
 | 2. .NET reference release | Use wallet and then orders to qualify the upgrade, recovery, exact packaged runtime and local signed policy decision. CF-002–CF-011, CF-046–CF-047, CF-073–CF-075, CF-078, CF-082, CF-086. | Fresh and upgraded state agree for the declared predecessor and target. Preserve saved inputs across the transition and retry. Retain the required Assay, runtime and restore evidence and verify the signed decision in a separate environment. |
 | 3. Mixed workloads and reproduction | Qualify Python and Kotlin/JVM in CF-073–CF-074. Add published migration lineage under CF-085, targeted development and tenant reproduction. | A mixed release uses separate native gate receipts. Preserve shared migration history across branches. Reproduce an identified deployment and selected tenant state in a sandbox. |
@@ -2055,14 +2058,14 @@ provides a retained negative case for AC-19.
 | AC-38 complete reference upgrade | Use the installed tools to upgrade populated wallet data, recover after interruption and inspect the actual installed state. Refuse a reviewed plan whose target baseline has changed. Collect the required native and packaged-runtime evidence and seal the scoped release decision. Repeat with orders. | CF-002, CF-038–CF-040, CF-065, CF-074–CF-075, CF-078, CF-082, CF-086 |
 | AC-39 independent release verification | Use a separate environment and configured trust to verify the portable release proof. Reject altered bytes and an untrusted issuer. With changed target policy, retain the recorded historical decision and refuse use for a new effect until current admission is satisfied. | CF-028, CF-053, CF-071, CF-078, CF-086 |
 
-### Baseline capability versus new work
+### Archived baseline and Rust port status
 
-| Area | Retained local baseline | Additional requirement still to implement/qualify |
+| Area | Archived local baseline | Active implementation or remaining requirement |
 |---|---|---|
 | Planning | Validated six-kind graph and identity-bound resume | Frozen package resolution, typed dependency outputs, target-matched predecessor checks and forward-equivalence publication gate |
 | Authoring | Versioned JSON workflow schema | Versioned Dhall package and workspace schema feeding the shared model, with pinned imports and offline evaluation |
-| Interfaces | Installed CLI with help, capabilities and JSON records | CLI result compatibility and gate discovery, local MCP client qualification and policy-bound execution |
-| Database | Exercised Flyway/PostgreSQL recipe and repeated no-op migration | Edited-history rejection, schema drift, mixed-version compatibility, backfill faults and restore drills |
+| Interfaces | Installed CLI with help, capabilities and JSON records | Installed Rust migration commands. Broader CLI compatibility, gate discovery and local MCP are open. |
+| Database | Exercised Flyway/PostgreSQL recipe and repeated no-op migration | Rust rejects changed history and recovers the Wallet V2 commit. Schema drift, mixed-version compatibility, backfill faults and restore drills are open. |
 | Delivery targets | Local process, files and owned Compose reconciliation | VM/service-manager and Kubernetes providers with independently qualified capabilities |
 | Reproduction | Artifact/release bundles and separately staged consumer fixtures | Versioned saved inputs, tenant captures, owned setup/runtime configuration and isolated environment mirrors |
 | Builds | Identified process builds and byte-deduplicating CAS | Qualified hermetic/action caching and provider input closure |
@@ -2070,7 +2073,7 @@ provides a retained negative case for AC-19.
 | Workloads and evidence | .NET wallet and orders deployments, historical 52-test Hallmark baseline and separate FsAssay Inconclusive receipt | Scoped, policy-bound FsAssay and CsAssay gates, then separately qualified PythonAssay and KotlinAssay gates in a mixed workload release |
 | Consumer qualification | Retained GSTFlow NativeAOT runtime failure | Packaged runtime checks, domain receipt admission, evidence corrections and signed release policy decisions |
 | Application delivery profiles | Local service deployment, packaged CLI and portable signed release | Browser delivery, tenant activation, standalone upgrades, mobile test channels and cross-version client compatibility |
-| Language/tooling | F# reference core/runtime/CLI and Python Playground helpers | Rust engine with scoped hooks and retained reference evidence |
+| Language/tooling | F# reference core/runtime/CLI and Python Playground helpers | Rust is the engine. Language-specific workload hooks are individual ports. |
 
 ### Assumptions and useful owner inputs
 

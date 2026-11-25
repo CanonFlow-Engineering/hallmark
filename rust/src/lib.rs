@@ -1,6 +1,21 @@
-//! Migration recovery decisions for Hallmark's functional core.
+//! Pure lifecycle planning, gate admission, migration recovery, and release verification
+//! decisions for Hallmark's functional core.
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+pub mod dag;
+pub mod gates;
+mod history;
+pub mod release;
+
+pub use history::{
+    DatabaseObservation, ForwardEquivalenceOutcome, History, LedgerEntry, Migration,
+    PendingMigrationV2, RecoveryDecisionV2, decide_recovery_v2, inspect_history,
+    migration_checksum, verify_forward_equivalence,
+};
+
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct MigrationSubject {
     pub plan_digest: String,
     pub target: String,
@@ -8,7 +23,8 @@ pub struct MigrationSubject {
     pub migration_id: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct PendingMigration {
     pub subject: MigrationSubject,
     pub expected_checksum: String,

@@ -1,11 +1,11 @@
-namespace Hallmark.Runtime
+namespace CanonForge.Runtime
 
 open System
 open System.IO
 open System.Text
 open System.Text.Json
 open System.Security.Cryptography
-open Hallmark.Lab.Serialization
+open CanonForge.Lab.Serialization
 
 type Property = { Key: string; Value: string }
 type FileIdentity = { Path: string; Digest: string }
@@ -39,32 +39,93 @@ module Storage =
                 let info: FileSystemInfo = if Directory.Exists current then upcast DirectoryInfo(current) else upcast FileInfo(current)
                 if not (isNull info.LinkTarget) then invalidOp "Symlinked paths are not admitted"
         path
+    let createPrivateDirectory (directory: string) =
+        let full = Path.GetFullPath directory
+        let mode = UnixFileMode.UserRead ||| UnixFileMode.UserWrite ||| UnixFileMode.UserExecute
+        if not (Directory.Exists full) then
+            if OperatingSystem.IsWindows() then
+                Directory.CreateDirectory full |> ignore
+            else
+                Directory.CreateDirectory(full, mode) |> ignore
+        if not (OperatingSystem.IsWindows()) then
+            try
+                File.SetUnixFileMode(full, mode)
+            with
+            | :? IOException | :? UnauthorizedAccessException -> ()
+
+    let private openPrivateFileStream (path: string) (mode: FileMode) (access: FileAccess) (share: FileShare) =
+        if OperatingSystem.IsWindows() then
+            new FileStream(path, mode, access, share)
+        else
+            let fileMode = UnixFileMode.UserRead ||| UnixFileMode.UserWrite
+            let opts = FileStreamOptions(Mode = mode, Access = access, Share = share, UnixCreateMode = fileMode)
+            let stream = new FileStream(path, opts)
+            try File.SetUnixFileMode(path, fileMode) with _ -> ()
+            stream
+
+    let private syncDirectory (directory: string) =
+        if not (OperatingSystem.IsWindows()) then
+            try
+                use handle = File.OpenHandle(directory, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+                RandomAccess.FlushToDisk handle
+            with
+            | :? IOException | :? UnauthorizedAccessException -> ()
+
     let atomic (path: string) (text: string) =
-        let directory = Path.GetDirectoryName(Path.GetFullPath path)
-        Directory.CreateDirectory directory |> ignore
-        let temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp"
+        let fullPath = Path.GetFullPath path
+        let directory = Path.GetDirectoryName fullPath
+        createPrivateDirectory directory
+        let temporary = fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp"
         try
-            File.WriteAllText(temporary,text,UTF8Encoding(false))
+            do
+                use stream = openPrivateFileStream temporary FileMode.CreateNew FileAccess.ReadWrite FileShare.None
+                let bytes = UTF8Encoding(false).GetBytes(text)
+                stream.Write(bytes, 0, bytes.Length)
+                stream.Flush(true)
             if not (OperatingSystem.IsWindows()) then File.SetUnixFileMode(temporary, UnixFileMode.UserRead ||| UnixFileMode.UserWrite)
-            File.Move(temporary,path,true)
+            File.Move(temporary, fullPath, true)
+            syncDirectory directory
         finally
             if File.Exists temporary then File.Delete temporary
+
+    let atomicOutput (path: string) (text: string) =
+        let fullPath = Path.GetFullPath path
+        let directory = Path.GetDirectoryName fullPath
+        if not (Directory.Exists directory) then
+            Directory.CreateDirectory directory |> ignore
+        let temporary = fullPath + "." + Guid.NewGuid().ToString("N") + ".tmp"
+        try
+            do
+                use stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None)
+                let bytes = UTF8Encoding(false).GetBytes(text)
+                stream.Write(bytes, 0, bytes.Length)
+                stream.Flush(true)
+            File.Move(temporary, fullPath, true)
+            syncDirectory directory
+        finally
+            if File.Exists temporary then File.Delete temporary
+
     let readBounded path =
         if FileInfo(path).Length > 8L*1024L*1024L then invalidOp "Stored document exceeds 8 MiB"
         File.ReadAllText path
     let private decode<'T> path = JsonSerializer.Deserialize<'T>(readBounded path,jsonOptions)
     let context state context =
+        createPrivateDirectory state
         let directory = child state (name "context" context)
-        Directory.CreateDirectory directory |> ignore
+        createPrivateDirectory directory
         directory
+    let lockFile (path: string) =
+        let fullPath = Path.GetFullPath path
+        createPrivateDirectory (Path.GetDirectoryName fullPath)
+        openPrivateFileStream fullPath FileMode.OpenOrCreate FileAccess.ReadWrite FileShare.None
     let lockContext directory =
-        new FileStream(Path.Combine(directory,"execution.lock"),FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None)
+        lockFile (Path.Combine(directory,"execution.lock"))
     let contextIdentity directory =
         let path = Path.Combine(directory,"identity")
         if not (File.Exists path) then atomic path (Guid.NewGuid().ToString("D"))
         readBounded path
     let sourceFiles root inputs =
-        let excluded = set ["bin";"obj";".git";".hallmark";"node_modules"]
+        let excluded = set ["bin";"obj";".git";".canonforge";"node_modules"]
         let rec enumerate path = seq {
             if File.Exists path then yield path
             elif Directory.Exists path then
@@ -81,10 +142,18 @@ module Storage =
     let storeArtifact directory source =
         let digest = hashFile source
         let path = Path.Combine(directory,"artifacts",digest.Substring(7))
-        Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
+        createPrivateDirectory (Path.GetDirectoryName path)
         if not (File.Exists path) then
             let temp = path + "." + Guid.NewGuid().ToString("N")
-            try File.Copy(source,temp); File.Move(temp,path,false)
+            try
+                do
+                    use srcStream = File.OpenRead source
+                    use dstStream = openPrivateFileStream temp FileMode.CreateNew FileAccess.ReadWrite FileShare.None
+                    srcStream.CopyTo dstStream
+                    dstStream.Flush(true)
+                if not (OperatingSystem.IsWindows()) then File.SetUnixFileMode(temp, UnixFileMode.UserRead ||| UnixFileMode.UserWrite)
+                File.Move(temp,path,false)
+                syncDirectory (Path.GetDirectoryName path)
             finally if File.Exists temp then File.Delete temp
         if hashFile path <> digest then invalidOp "Artifact store integrity mismatch"
         path,digest
@@ -122,7 +191,15 @@ module Storage =
         let sequence,previous = verifyHistory directory
         let item = { Sequence=sequence+1; Previous=previous; RunId=run; Stage=stage; Status=status; At=now(); Hash="" }
         let item = {item with Hash=ContentDigest.ofText(encode item)}
-        File.AppendAllText(Path.Combine(directory,"history.ndjson"),encode item + "\n",UTF8Encoding(false))
+        let historyPath = Path.Combine(directory,"history.ndjson")
+        createPrivateDirectory directory
+        let lineBytes = UTF8Encoding(false).GetBytes(encode item + "\n")
+        do
+            use stream = openPrivateFileStream historyPath FileMode.Append FileAccess.Write FileShare.Read
+            stream.Write(lineBytes, 0, lineBytes.Length)
+            stream.Flush(true)
+        if not (OperatingSystem.IsWindows()) then
+            try File.SetUnixFileMode(historyPath, UnixFileMode.UserRead ||| UnixFileMode.UserWrite) with _ -> ()
     let private key directory =
         let path = Path.Combine(directory,"secret.key")
         if not (File.Exists path) then atomic path (Convert.ToBase64String(RandomNumberGenerator.GetBytes 32))

@@ -1,0 +1,5 @@
+FROM mcr.microsoft.com/dotnet/runtime@sha256:a355be9c88e116b76ebebf6be86b7f6091b18a30dbb0f4c4c25ebd64d3099fa9
+WORKDIR /opt/hallmark/worker
+COPY --chmod=0755 worker/ ./
+USER 1654:1654
+ENTRYPOINT ["dotnet", "/opt/hallmark/worker/Hallmark.Cli.dll"]

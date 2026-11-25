@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><PackageLicenseExpression>Apache-2.0</PackageLicenseExpression></PropertyGroup>
   <ItemGroup>
     <Compile Include="Wire.fs" />
     <Compile Include="Storage.fs" />
     <Compile Include="Bundles.fs" />
     <Compile Include="Processes.fs" />
     <Compile Include="Runner.fs" />
+    <Compile Include="Mcp.fs" />
     <ProjectReference Include="../src/Hallmark.fsproj" />
   </ItemGroup>
 </Project>

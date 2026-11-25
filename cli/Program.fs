@@ -1,37 +1,37 @@
-module Hallmark.Cli.Program
+module CanonForge.Cli.Program
 
 open System
 open System.IO
 open System.Text.Json
 open System.Threading
-open Hallmark.Runtime
-open Hallmark.Lab.Serialization
+open CanonForge.Runtime
+open CanonForge.Lab.Serialization
 
 let emit value = printfn "%s" (Storage.encode value)
-let help = """Hallmark
+let help = """CanonForge
 Typed local build and delivery with explicit evidence.
 
-hallmark capabilities
-hallmark schema
-hallmark plan MANIFEST [--state-dir DIR]
-hallmark apply MANIFEST [--state-dir DIR]
-hallmark resume MANIFEST --run ID [--state-dir DIR]
-hallmark converge MANIFEST --run ID [--state-dir DIR]
-hallmark freeze MANIFEST FILE [--state-dir DIR]
-hallmark status --context NAME [--state-dir DIR]
-hallmark history --context NAME [--state-dir DIR]
-hallmark drift --context NAME --run ID [--state-dir DIR]
-hallmark secret-set NAME --context NAME [--state-dir DIR] < material
-hallmark secret-list --context NAME [--state-dir DIR]
-hallmark public-key --context NAME [--state-dir DIR]
-hallmark release-verify FILE --public-key FILE
-hallmark bundle FILE --context NAME --run ID --public-key FILE [--state-dir DIR]
-hallmark bundle-verify FILE --public-key FILE
-hallmark promote VERSION --channel NAME --context NAME --public-key FILE [--state-dir DIR]
-hallmark channels --context NAME [--state-dir DIR]
-hallmark destroy --context NAME --run ID [--state-dir DIR]
-hallmark export FILE --context NAME --run ID [--state-dir DIR]
-hallmark doctor
+canonforge capabilities
+canonforge schema
+canonforge plan MANIFEST [--state-dir DIR]
+canonforge apply MANIFEST [--state-dir DIR]
+canonforge resume MANIFEST --run ID [--state-dir DIR]
+canonforge converge MANIFEST --run ID [--state-dir DIR]
+canonforge freeze MANIFEST FILE [--state-dir DIR]
+canonforge status --context NAME [--state-dir DIR]
+canonforge history --context NAME [--state-dir DIR]
+canonforge drift --context NAME --run ID [--state-dir DIR]
+canonforge secret-set NAME --context NAME [--state-dir DIR] < material
+canonforge secret-list --context NAME [--state-dir DIR]
+canonforge public-key --context NAME [--state-dir DIR]
+canonforge release-verify FILE --public-key FILE
+canonforge bundle FILE --context NAME --run ID --public-key FILE [--state-dir DIR]
+canonforge bundle-verify FILE --public-key FILE
+canonforge promote VERSION --channel NAME --context NAME --public-key FILE [--state-dir DIR]
+canonforge channels --context NAME [--state-dir DIR]
+canonforge destroy --context NAME --run ID [--state-dir DIR]
+canonforge export FILE --context NAME --run ID [--state-dir DIR]
+canonforge doctor
 
 Plans and state directories are trusted local execution inputs.
 Secrets enter through stdin and are referenced by name in the manifest.
@@ -41,11 +41,15 @@ Exit: 0 success, 1 failed run, 2 observed drift, 3 unavailable/invalid runtime e
 """
 
 let options (arguments: string array) =
-    let allowed = set ["--state-dir";"--context";"--run";"--public-key";"--plan-digest";"--channel"]
+    let allowed = set ["--state-dir";"--context";"--run";"--public-key";"--plan-digest";"--channel";"--fixture"]
+    let flags = set ["--allow-effects"]
     let rec parse remaining positional values =
         match remaining with
         | [] -> List.rev positional,values
         | "--"::rest -> List.rev positional @ rest,values
+        | flag::rest when flags.Contains flag ->
+            if Map.containsKey flag values then invalidArg "arguments" ("Duplicate option " + flag)
+            parse rest positional (Map.add flag "true" values)
         | key::value::rest when allowed.Contains key ->
             if Map.containsKey key values then invalidArg "arguments" ("Duplicate option " + key)
             parse rest positional (Map.add key value values)
@@ -64,11 +68,30 @@ let main argv =
         else
             let positional,values = options argv[1..]
             let require name = Map.tryFind name values |> Option.defaultWith (fun () -> invalidArg "arguments" ("Missing " + name))
-            let state = Map.tryFind "--state-dir" values |> Option.defaultValue (Path.Combine(Environment.CurrentDirectory,".hallmark")) |> Path.GetFullPath
+            let state = Map.tryFind "--state-dir" values |> Option.defaultValue (Path.Combine(Environment.CurrentDirectory,".canonforge")) |> Path.GetFullPath
             let context () = Storage.context state (require "--context")
             match argv[0],positional with
             | "capabilities",[] ->
-                emit {|schemaVersion=1;version="0.2.0-local";stages=[|"Build";"Install";"Configure";"Migrate";"Verify";"Release"|];operations=[|"process";"write-file";"capture";"compose-up";"http";"release"|];commands=[|"capabilities";"schema";"doctor";"plan";"freeze";"apply";"resume";"converge";"status";"history";"drift";"secret-set";"secret-list";"public-key";"release-verify";"bundle";"bundle-verify";"promote";"channels";"export";"destroy"|];execution="trusted-local";qualifiedPlatform="linux-x86_64";ruleAuthority="external-producer-contract"|}
+                emit {|schemaVersion=1;version="0.2.0-local";stages=[|"Build";"Install";"Configure";"Migrate";"Verify";"Release"|];operations=[|"process";"write-file";"capture";"compose-up";"postgres-migrate";"http";"release"|];commands=[|"capabilities";"schema";"doctor";"plan";"freeze";"emit-json";"mcp";"three-owner-check";"triage";"apply";"resume";"converge";"status";"history";"drift";"secret-set";"secret-list";"public-key";"release-verify";"bundle";"bundle-verify";"promote";"channels";"export";"destroy"|];execution="trusted-local";qualifiedPlatform="linux-x86_64";ruleAuthority="external-producer-contract"|}
+                0
+            | "three-owner-check",[fixturePath] ->
+                let verdict, json = Mcp.evaluateThreeOwnerFixtureFile fixturePath
+                printfn "%s" json
+                if verdict.Admitted then 0 else 3
+            | "triage",[] ->
+                let ctxName = require "--context"
+                let fixtureOpt = Map.tryFind "--fixture" values
+                printfn "%s" (Mcp.evaluateOperatorTriage state ctxName fixtureOpt)
+                0
+            | "emit-json",[manifest] ->
+                match Wire.parse(Storage.readBounded manifest) with
+                | Ok w -> printfn "%s" (Wire.toJson w); 0
+                | Error e -> invalidOp e
+            | "mcp",[] ->
+                let allowEffects =
+                    Map.tryFind "--allow-effects" values = Some "true"
+                    || Environment.GetEnvironmentVariable("HALLMARK_MCP_ALLOW_EFFECTS") = "true"
+                Mcp.runStdio state allowEffects Console.In Console.Out
                 0
             | "schema",[] ->
                 printfn "%s" (Storage.readBounded(Path.Combine(AppContext.BaseDirectory,"schema","workflow-v1.schema.json")))
@@ -83,8 +106,10 @@ let main argv =
             | "freeze",[manifest;path] ->
                 let prepared = Runner.prepare manifest state
                 use preview = JsonDocument.Parse(Plan.previewJson prepared.Plan)
-                Storage.atomic path (Storage.encode {|schemaVersion=1;planDigest=prepared.Digest;sourceDigest=prepared.SourceDigest;sourceFiles=prepared.Sources;secretVersions=prepared.SecretVersions;preview=preview.RootElement.Clone()|})
-                emit {|schemaVersion=1;path=Path.GetFullPath path;planDigest=prepared.Digest;digest=Storage.hashFile path|}
+                let policyDigest = prepared.PolicyDigest
+                let targetDigest = prepared.TargetDigest
+                Storage.atomicOutput path (Storage.encode {|schemaVersion=1;planDigest=prepared.Digest;sourceDigest=prepared.SourceDigest;policyDigest=policyDigest;targetDigest=targetDigest;sourceFiles=prepared.Sources;secretVersions=prepared.SecretVersions;preview=preview.RootElement.Clone()|})
+                emit {|schemaVersion=1;path=Path.GetFullPath path;planDigest=prepared.Digest;sourceDigest=prepared.SourceDigest;policyDigest=policyDigest;targetDigest=targetDigest;digest=Storage.hashFile path|}
                 0
             | ("apply" | "resume" | "converge") as command,[manifest] ->
                 let prepared = Runner.prepare manifest state
@@ -150,7 +175,9 @@ let main argv =
             | "promote",[version] ->
                 let directory = context()
                 use executionLock = Storage.lockContext directory
-                let path = Storage.promote directory version (require "--channel") (File.ReadAllText(require "--public-key").Trim())
+                let trustedPublicKey = File.ReadAllText(require "--public-key").Trim()
+                Runner.verifyPromotionGate directory version trustedPublicKey (Map.tryFind "--fixture" values)
+                let path = Storage.promote directory version (require "--channel") trustedPublicKey
                 emit {|schemaVersion=1;path=path;version=version;operation="local-release-pointer-only"|}
                 0
             | "channels",[] ->
@@ -162,7 +189,7 @@ let main argv =
                 let directory = context()
                 let run = Storage.loadRun directory (require "--run")
                 let count,head = Storage.verifyHistory directory
-                Storage.atomic path (Storage.encode {|schemaVersion=1;run=run;historyEvents=count;historyHead=head|})
+                Storage.atomicOutput path (Storage.encode {|schemaVersion=1;run=run;historyEvents=count;historyHead=head|})
                 emit {|schemaVersion=1;path=Path.GetFullPath path;digest=Storage.hashFile path|}
                 0
             | "destroy",[] ->

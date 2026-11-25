@@ -94,6 +94,13 @@ function taskButton(task: DeliveryTask, className = "task-link", text = task.tit
   return button;
 }
 
+function issueLink(task: DeliveryTask): HTMLAnchorElement | undefined {
+  if (task.issue === undefined) return;
+  const link = element("a", "issue-link", `Forgejo issue #${task.issue}`);
+  link.href = `${deliveryPlan.forgejo}/issues/${task.issue}`;
+  return link;
+}
+
 const dialog = requiredElement("#task-dialog", HTMLDialogElement);
 const detail = requiredElement("#task-detail", HTMLDivElement);
 
@@ -112,6 +119,12 @@ function openTask(task: DeliveryTask): void {
   addDetail(fields, "Acceptance check", task.acceptance);
   addDetail(fields, "Requirements", task.refs);
   if (task.evidence) addDetail(fields, "Observed evidence", task.evidence);
+  const issue = issueLink(task);
+  if (issue) {
+    const link = element("dd");
+    link.append(issue);
+    fields.append(element("dt", "", "Tracking issue"), link);
+  }
   const otherView = viewKind === "gantt" ? "Kanban" : "Gantt";
   const alternative = element("a", "alternate", `Open in ${otherView}`);
   const taskPath = `${otherView.toLowerCase()}.html?task=${encodeURIComponent(task.id)}`;
@@ -141,6 +154,12 @@ function renderSummary(): void {
   panel.append(element("h2", "", "Next ready task"));
   if (next) {
     panel.append(taskButton(next), element("p", "muted", next.detail));
+    const issue = issueLink(next);
+    if (issue) {
+      const tracking = element("p");
+      tracking.append(issue);
+      panel.append(tracking);
+    }
   } else {
     panel.append(element("p", "", "No task is ready."));
   }

@@ -1,5 +1,5 @@
-open Hallmark.Lab
-open Hallmark.Lab.Serialization
+open CanonForge.Lab
+open CanonForge.Lab.Serialization
 
 [<EntryPoint>]
 let main _ =
